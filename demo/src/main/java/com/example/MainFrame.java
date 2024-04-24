@@ -75,18 +75,28 @@ public class MainFrame extends JFrame {
     }
 
     public static void main(String[] args) {
-        String host = "sql.freedb.tech";
-        int port = 3306; 
-        String databaseName = "freedb_veterinariaclinica";
-        String user = "freedb_andav";
-        String password = "6q4x3^dFMS$@JAV";
-      
         
+        String usuario = "freedb_andav";
+        String pass = "6q4x3^dFMS$@JAV";
+        String bd = "freedb_veterinariaclinica";
+        String host = "sql.freebd.tech";
+    
+        
+        ConexionMySQL conexion = new ConexionMySQL(usuario, pass, bd, host);
+    
         try {
-            DBManager dbManager = new DBManager(host, port, databaseName, user, password);
-            new MainFrame(dbManager).setVisible(true);
+            // Intentar conectar a la base de datos
+            conexion.conectar();
+            System.out.println("Conexión exitosa a la base de datos.");
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "No se pudo conectar con la base de datos: " + e.getMessage(), "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+            // Manejar la excepción si la conexión falla
+            System.err.println("Error al conectar a la base de datos: " + e.getMessage());
+            e.printStackTrace();
         }
+    
+      
     }
-}
+        
+       
+    }
+
