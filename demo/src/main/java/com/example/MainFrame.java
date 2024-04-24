@@ -1,4 +1,5 @@
 package com.example;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -6,10 +7,10 @@ import java.awt.event.ActionListener;
 import java.sql.*;
 
 public class MainFrame extends JFrame {
-    private DBManager dbManager;
+    private DBmanager dbManager;
     private JTextArea textArea;
 
-    public MainFrame(DBManager dbManager) {
+    public MainFrame(DBmanager dbManager) {
         this.dbManager = dbManager;
         setTitle("Sistema de Gestión - Clínica Veterinaria");
         setSize(800, 600);
@@ -63,10 +64,10 @@ public class MainFrame extends JFrame {
 
     private void fetchData() {
         try {
-            ResultSet rs = dbManager.executeQuery("SELECT * FROM Mascotas");
+            ResultSet rs = dbManager.executeQuery("SELECT nombre, especie FROM Mascotas");
             StringBuilder sb = new StringBuilder();
             while (rs.next()) {
-                sb.append(rs.getString("nombre")).append(" - ").append(rs.getString("especie")).append("\n");
+                sb.append("Nombre: ").append(rs.getString("nombre")).append(", Especie: ").append(rs.getString("especie")).append("\n");
             }
             textArea.setText(sb.toString());
         } catch (SQLException e) {
@@ -75,28 +76,8 @@ public class MainFrame extends JFrame {
     }
 
     public static void main(String[] args) {
-        
-        String usuario = "freedb_andav";
-        String pass = "6q4x3^dFMS$@JAV";
-        String bd = "freedb_veterinariaclinica";
-        String host = "sql.freebd.tech";
-    
-        
-        ConexionMySQL conexion = new ConexionMySQL(usuario, pass, bd, host);
-    
-        try {
-            // Intentar conectar a la base de datos
-            conexion.conectar();
-            System.out.println("Conexión exitosa a la base de datos.");
-        } catch (SQLException e) {
-            // Manejar la excepción si la conexión falla
-            System.err.println("Error al conectar a la base de datos: " + e.getMessage());
-            e.printStackTrace();
-        }
-    
-      
+        // Aquí deberías crear una instancia de DBManager y conectarla a tu base de datos.
+        // DBManager dbManager = new DBManager();
+        // new MainFrame(dbManager).setVisible(true);
     }
-        
-       
-    }
-
+}

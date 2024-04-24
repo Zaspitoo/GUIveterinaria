@@ -1,65 +1,88 @@
 package com.example;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
+import java.util.Base64;
 
 public class RegistroFrame extends JFrame {
-    private JTextField txtNombre;
-    private JTextField txtEmail;
+    private JTextField txtUsername;
     private JPasswordField txtPassword;
-    private JButton btnRegistrar;
-    private DBManager dbManager;
+    private JButton btnRegister;
+    private DBmanager dbManager;
 
-    public RegistroFrame(DBManager dbManager) {
+    public RegistroFrame(DBmanager dbManager) {
         this.dbManager = dbManager;
         setTitle("Registro de Usuario - Clínica Veterinaria");
         setSize(300, 200);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         initUI();
+        setLocationRelativeTo(null); // Centrar ventana
     }
 
     private void initUI() {
-        txtNombre = new JTextField(15);
-        txtEmail = new JTextField(15);
-        txtPassword = new JPasswordField(15);
-        btnRegistrar = new JButton("Registrar");
-
         JPanel panel = new JPanel();
-        panel.add(new JLabel("Nombre:"));
-        panel.add(txtNombre);
-        panel.add(new JLabel("Email:"));
-        panel.add(txtEmail);
-        panel.add(new JLabel("Contraseña:"));
-        panel.add(txtPassword);
-        panel.add(btnRegistrar);
+        panel.setLayout(new GridLayout(3, 2));
 
-        btnRegistrar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                registrarUsuario();
-            }
-        });
+        panel.add(new JLabel("Usuario:"));
+        txtUsername = new JTextField(15);
+        panel.add(txtUsername);
+
+        panel.add(new JLabel("Contraseña:"));
+        txtPassword = new JPasswordField(15);
+        panel.add(txtPassword);
+
+        btnRegister = new JButton("Registrar");
+        btnRegister.addActionListener(this::registerUser);
+        panel.add(btnRegister);
 
         add(panel);
     }
 
-    private void registrarUsuario() {
-        String nombre = txtNombre.getText().trim();
-        String email = txtEmail.getText().trim();
+    private void registerUser(ActionEvent event) {
+        String username = txtUsername.getText().trim();
         String password = new String(txtPassword.getPassword()).trim();
 
-        if (nombre.isEmpty() || email.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Todos los campos deben ser completados", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+        try {
+            if (username.isEmpty() || password.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (dbManager.userExists(username)) {
+                JOptionPane.showMessageDialog(this, "El usuario ya existe", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            String hashedPassword = hashPassword(password);
+            if (dbManager.addUser(username, hashedPassword)) {
+                JOptionPane.showMessageDialog(this, "Usuario registrado correctamente");
+                this.dispose();
+                new LoginFrame(dbManager).setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al registrar usuario", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error de base de datos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-        // Implementar validaciones adicionales aquí (formato de email, complejidad de contraseña)
-        
-        if (dbManager.registrarUsuario(nombre, email, password)) {
-            JOptionPane.showMessageDialog(this, "Usuario registrado exitosamente");
-            dispose();  // Cerrar la ventana de registro tras un registro exitoso
-        } else {
-            JOptionPane.showMessageDialog(this, "Error al registrar usuario. Es posible que el email ya esté en uso.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private String hashPassword(String password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes());
+            return Base64.getEncoder().encodeToString(hash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error al hashear la contraseña", e);
         }
+    }
+
+    public static void main(String[] args) {
+        DBmanager dbManager = new DBmanager();
+        new RegistroFrame(dbManager).setVisible(true);
     }
 }

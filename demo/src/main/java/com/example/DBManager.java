@@ -1,115 +1,97 @@
 package com.example;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 
-public class DBManager {
+public class DBmanager {
     private Connection connection;
 
-    // Constructor ajustado para aceptar los parámetros de conexión
-    public DBManager(String host, int port, String databaseName, String user, String password) throws SQLException {
-        System.out.println("🔌 Intentando conectar a la base de datos...");
-        String url = "jdbc:mysql://" + host + ":" + port + "/" + databaseName;
-        this.connection = DriverManager.getConnection(url, user, password);
-        System.out.println("✅ Conexión establecida exitosamente!");
-    }
-
-    public DBManager(String url, String user, String password) throws SQLException {
-        System.out.println("🔌 Intentando conectar a la base de datos...");
-        this.connection = DriverManager.getConnection(url, user, password);
-        System.out.println("✅ Conexión establecida exitosamente!");
-    }
-
-    // Método para insertar usuarios con seguridad de contraseña
-    public boolean insertarUsuario(String nombre, String email, String hashedPassword) {
-        String query = "INSERT INTO usuarios (nombre, email, password) VALUES (?, ?, ?)";
-        try (PreparedStatement pst = connection.prepareStatement(query)) {
-            pst.setString(1, nombre);
-            pst.setString(2, email);
-            pst.setString(3, hashedPassword);
-            int result = pst.executeUpdate();
-            return result > 0;
-        } catch (SQLException e) {
-            System.err.println("Error al insertar usuario: " + e.getMessage());
-            return false;
-        }
-    }
-
-    // Ejemplo de método para consultar usuarios
-    public ResultSet consultarUsuarios() {
-        String query = "SELECT * FROM usuarios";
+    public DBmanager() {
         try {
-            Statement stmt = connection.createStatement();
-            return stmt.executeQuery(query);
+            this.connection = ConexionMySQL.getConnection();
         } catch (SQLException e) {
-            System.err.println("Error al consultar usuarios: " + e.getMessage());
-            return null;
+            System.out.println("Error al conectar con la base de datos: " + e.getMessage());
         }
     }
 
-    // Ejemplo de método para actualizar usuarios
-    public boolean actualizarUsuario(int id, String nuevoNombre) {
-        String query = "UPDATE usuarios SET nombre = ? WHERE id = ?";
-        try (PreparedStatement pst = connection.prepareStatement(query)) {
-            pst.setString(1, nuevoNombre);
-            pst.setInt(2, id);
-            int result = pst.executeUpdate();
-            return result > 0;
-        } catch (SQLException e) {
-            System.err.println("Error al actualizar usuario: " + e.getMessage());
-            return false;
-        }
-    }
-
-    // Ejemplo de método para eliminar usuarios
-    public boolean eliminarUsuario(int id) {
-        String query = "DELETE FROM usuarios WHERE id = ?";
-        try (PreparedStatement pst = connection.prepareStatement(query)) {
-            pst.setInt(1, id);
-            int result = pst.executeUpdate();
-            return result > 0;
-        } catch (SQLException e) {
-            System.err.println("Error al eliminar usuario: " + e.getMessage());
-            return false;
-        }
-    }
-    public boolean verificarCredenciales(String usuario, String password) {
-        String query = "SELECT password FROM usuarios WHERE usuario = ?";
-        try (PreparedStatement pst = connection.prepareStatement(query)) {
-            pst.setString(1, usuario);
-            ResultSet rs = pst.executeQuery();
-            if (rs.next()) {
-                // Obtener la contraseña almacenada
-                String storedPassword = rs.getString("password");
-                // Comprobar si las contraseñas coinciden
-                // Aquí deberías implementar la lógica de comparación de hashing si estás usando contraseñas hasheadas
-                return storedPassword.equals(password);
+    public void closeConnection() {
+        if (this.connection != null) {
+            try {
+                this.connection.close();
+            } catch (SQLException e) {
+                System.out.println("Error al cerrar la conexión: " + e.getMessage());
             }
-        } catch (SQLException e) {
-            System.err.println("Error al verificar credenciales: " + e.getMessage());
         }
-        return false;
     }
-    public boolean registrarUsuario(String nombre, String email, String password) {
-        String query = "INSERT INTO usuarios (nombre, email, password) VALUES (?, ?, ?)";
-        try (PreparedStatement pst = connection.prepareStatement(query)) {
-            pst.setString(1, nombre);
-            pst.setString(2, email);
-            pst.setString(3, password);
-            int result = pst.executeUpdate();
-            return result > 0;
-        } catch (SQLException e) {
-            System.err.println("Error al registrar usuario: " + e.getMessage());
+
+    public boolean executeInsert(String sql) throws SQLException {
+        try (Statement stmt = this.connection.createStatement()) {
+            int affectedRows = stmt.executeUpdate(sql);
+            return affectedRows > 0;
+        }
+    }
+
+    public ResultSet executeQuery(String sql) throws SQLException {
+        try (Statement stmt = this.connection.createStatement()) {
+            return stmt.executeQuery(sql);
+        }
+    }
+
+    public boolean verifyCredentials(String username, String password) throws SQLException {
+        String query = "SELECT password FROM users WHERE username = ?";
+        try (PreparedStatement pstmt = this.connection.prepareStatement(query)) {
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                String storedPassword = rs.getString("password");
+                return verifyPassword(password, storedPassword);
+            }
             return false;
         }
     }
-    public ResultSet executeQuery(String query) throws SQLException {
-        Statement stmt = connection.createStatement();
-        return stmt.executeQuery(query);
+
+    public boolean userExists(String username) throws SQLException {
+        String query = "SELECT COUNT(*) AS count FROM users WHERE username = ?";
+        try (PreparedStatement pstmt = this.connection.prepareStatement(query)) {
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("count") > 0;
+            }
+            return false;
+        }
     }
 
-    // Método para ejecutar inserciones, actualizaciones y eliminaciones
-    public int executeInsert(String query) throws SQLException {
-        Statement stmt = connection.createStatement();
-        return stmt.executeUpdate(query);  // Retorna el número de filas afectadas
+    public boolean addUser(String username, String password) throws SQLException {
+        String hashedPassword = hashPassword(password);
+        String sql = "INSERT INTO users (username, password) VALUES (?, ?)";
+        try (PreparedStatement pstmt = this.connection.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            pstmt.setString(2, hashedPassword);
+            int affectedRows = pstmt.executeUpdate();
+            return affectedRows > 0;
+        }
     }
 
+    private String hashPassword(String password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error al hashear la contraseña", e);
+        }
+    }
+
+    private boolean verifyPassword(String password, String storedPassword) {
+        String hashedPassword = hashPassword(password);
+        return hashedPassword.equals(storedPassword);
+    }
 }
