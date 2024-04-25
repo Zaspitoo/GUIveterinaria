@@ -1,14 +1,17 @@
 package com.example;
 
-import java.sql.*;
+import java.sql.*;  // Importa las clases necesarias para trabajar con SQL.
 
+// Clase que gestiona la conexión a la base de datos MySQL.
 public class ConexionMySQL {
-    // Utiliza las credenciales proporcionadas en la imagen para conectar con la base de datos
+    // Detalles de la conexión a la base de datos.
     private static final String URL = "jdbc:mysql://sql.freedb.tech:3306/freedb_veterinariaclinica";
     private static final String USER = "freedb_andav";
     private static final String PASSWORD = "6q4X3*dFM$$@JAV";
 
-    public static Connection getConnection() throws SQLException {
+    // Método estático que retorna una conexión a la base de datos.
+    public static Connection getConexion() throws SQLException {
+        // Retorna una conexión usando los datos de URL, usuario y contraseña.
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 }

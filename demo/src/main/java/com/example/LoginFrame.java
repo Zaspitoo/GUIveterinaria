@@ -3,62 +3,58 @@ package com.example;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.sql.SQLException;
 
 public class LoginFrame extends JFrame {
-    private JTextField txtUsuario;
-    private JPasswordField txtPassword;
-    private JButton btnLogin;
-    private DBmanager dbManager;
+    private JTextField txtUsuario;  // Campo de texto para el nombre de usuario.
+    private JPasswordField txtContraseña;  // Campo de texto para la contraseña.
+    private JButton btnIniciarSesion;  // Botón para iniciar sesión.
+    private DBmanager gestorDB;  // Gestor de la base de datos.
 
-    public LoginFrame(DBmanager dbManager) {
-        this.dbManager = dbManager;
-        setTitle("Inicio de Sesión - Clínica Veterinaria");
-        setSize(300, 150);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        initUI();
-        setLocationRelativeTo(null); // Centrar ventana
+    // Constructor del marco de inicio de sesión.
+    public LoginFrame(DBmanager gestorDB) {
+        this.gestorDB = gestorDB;
+        setTitle("Inicio de Sesión - Clínica Veterinaria");  // Título de la ventana.
+        setSize(300, 150);  // Tamaño de la ventana.
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  // Comportamiento al cerrar la ventana.
+        initUI();  // Inicializa los componentes de la interfaz.
+        setLocationRelativeTo(null);  // Centra la ventana.
     }
 
+    // Inicializa la interfaz de usuario.
     private void initUI() {
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(3, 2));
+        panel.setLayout(new GridLayout(3, 2));  // Diseño de la cuadrícula.
 
-        panel.add(new JLabel("Usuario:"));
+        panel.add(new JLabel("Usuario:"));  // Etiqueta para el nombre de usuario.
         txtUsuario = new JTextField(15);
         panel.add(txtUsuario);
 
-        panel.add(new JLabel("Contraseña:"));
-        txtPassword = new JPasswordField(15);
-        panel.add(txtPassword);
+        panel.add(new JLabel("Contraseña:"));  // Etiqueta para la contraseña.
+        txtContraseña = new JPasswordField(15);
+        panel.add(txtContraseña);
 
-        btnLogin = new JButton("Iniciar Sesión");
-        btnLogin.addActionListener(this::loginUser);
-        panel.add(btnLogin);
+        btnIniciarSesion = new JButton("Iniciar Sesión");
+        btnIniciarSesion.addActionListener(this::iniciarSesion);  // Añade acción al botón.
+        panel.add(btnIniciarSesion);
 
-        add(panel);
+        add(panel);  // Añade el panel al marco.
     }
 
-    private void loginUser(ActionEvent event) {
-        String usuario = txtUsuario.getText().trim();
-        String password = new String(txtPassword.getPassword()).trim();
+    // Método que se llama al hacer clic en el botón de inicio de sesión.
+    private void iniciarSesion(ActionEvent evento) {
+        String usuario = txtUsuario.getText().trim();  // Obtiene el nombre de usuario.
+        String contraseña = new String(txtContraseña.getPassword()).trim();  // Obtiene la contraseña.
 
         try {
-            if (dbManager.verifyCredentials(usuario, password)) {
+            if (gestorDB.verificarCredenciales(usuario, contraseña)) {
                 JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso!");
-                new MainFrame(dbManager).setVisible(true);
-                this.dispose();
+                new MainFrame(gestorDB).setVisible(true);  // Abre el marco principal.
+                this.dispose();  // Cierra el marco de inicio de sesión.
             } else {
                 JOptionPane.showMessageDialog(this, "Credenciales inválidas", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al iniciar sesión: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }
-
-    public static void main(String[] args) {
-        DBmanager dbManager = new DBmanager();
-        new LoginFrame(dbManager).setVisible(true);
     }
 }

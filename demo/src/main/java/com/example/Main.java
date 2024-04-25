@@ -1,22 +1,33 @@
 package com.example;
 
-import javax.swing.*;
+import javax.swing.*;  // Importa las clases necesarias para crear interfaces gráficas.
 
 public class Main {
     public static void main(String[] args) {
-        DBmanager dbManager = new DBmanager();
+        DBmanager gestorDB = new DBmanager();  // Crea un objeto para gestionar la base de datos.
 
-        int response = JOptionPane.showOptionDialog(null, "¿Deseas iniciar sesión o registrarte?",
+        // Crea un diálogo que permite al usuario elegir entre iniciar sesión, registrarse o registrar una mascota.
+        Object[] opciones = {"Iniciar Sesión", "Registrarse", "Registrar Mascota"};
+        int respuesta = JOptionPane.showOptionDialog(null, "¿Deseas iniciar sesión, registrarte o registrar una mascota?",
                 "Inicio de aplicación",
-                JOptionPane.YES_NO_OPTION,
+                JOptionPane.YES_NO_CANCEL_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
                 null,
-                new String[]{"Iniciar Sesión", "Registrarse"}, "Iniciar Sesión");
+                opciones, opciones[0]);
 
-        if (response == JOptionPane.YES_OPTION) {
-            new LoginFrame(dbManager).setVisible(true);
-        } else {
-            new RegistroFrame(dbManager).setVisible(true);
+        switch (respuesta) {
+            case JOptionPane.YES_OPTION: // Iniciar sesión
+                new LoginFrame(gestorDB).setVisible(true);
+                break;
+            case JOptionPane.NO_OPTION: // Registrarse
+                new RegistroFrame(gestorDB).setVisible(true);
+                break;
+            case JOptionPane.CANCEL_OPTION: // Registrar Mascota
+                new RegistroMascotas(gestorDB).setVisible(true);
+                break;
+            default:
+                System.exit(0); // Cierra la aplicación si se cierra el diálogo o se elige una opción no contemplada.
+                break;
         }
     }
 }
