@@ -3,6 +3,7 @@ module com.example {
     requires javafx.fxml;
     requires java.desktop;
     requires java.sql;
+    requires java.sql.rowset;
 
     // Asegura que todos los paquetes relevantes están abiertos a javafx.fxml, si usas FXML en ellos
     opens com.example to javafx.fxml;

@@ -9,8 +9,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>22</maven.compiler.source>
-        <maven.compiler.target>22</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -19,7 +19,7 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.20</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -30,21 +30,16 @@
             <artifactId>javafx-fxml</artifactId>
             <version>13</version>
         </dependency>
-    
-      <dependency>
-        <groupId>com.github.axet</groupId>
-        <artifactId>jlame</artifactId>
-        <version>3.100</version>
-      </dependency>
 
-   
-    
-      <dependency>
-        <groupId>io.vacco.jlame</groupId>
-        <artifactId>jlame</artifactId>
-        <version>3.100.2</version>
-      </dependency>
+       
+
+        <dependency>
+            <groupId>io.vacco.jlame</groupId>
+            <artifactId>jlame</artifactId>
+            <version>3.100.2</version>
+        </dependency>
     </dependencies>
+    
 
     <build>
         <plugins>
@@ -53,7 +48,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
-                    <release>22</release>
+                    <release>17</release>
                 </configuration>
             </plugin>
             <plugin>
@@ -63,6 +58,9 @@
                 <executions>
                     <execution>
                         <id>default-cli</id>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
                         <configuration>
                             <mainClass>com.example.App</mainClass>
                         </configuration>
