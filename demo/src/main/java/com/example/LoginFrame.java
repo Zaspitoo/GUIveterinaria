@@ -22,8 +22,7 @@ public class LoginFrame extends JFrame {
 
     // Inicializa la interfaz de usuario.
     private void initUI() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(3, 2));  // Diseño de la cuadrícula.
+        JPanel panel = new JPanel(new GridLayout(3, 2));  // Diseño de la cuadrícula.
 
         panel.add(new JLabel("Usuario:"));  // Etiqueta para el nombre de usuario.
         txtUsuario = new JTextField(15);
@@ -42,13 +41,15 @@ public class LoginFrame extends JFrame {
 
     // Método que se llama al hacer clic en el botón de inicio de sesión.
     private void iniciarSesion(ActionEvent evento) {
-        String usuario = txtUsuario.getText().trim();  // Obtiene el nombre de usuario.
-        String contraseña = new String(txtContraseña.getPassword()).trim();  // Obtiene la contraseña.
-
+        String usuario = txtUsuario.getText().trim();
+        String contraseña = new String(txtContraseña.getPassword()).trim();
+    
         try {
             if (gestorDB.verificarCredenciales(usuario, contraseña)) {
                 JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso!");
-                new MainFrame(gestorDB).setVisible(true);  // Abre el marco principal.
+                // Cambia el flujo según la nueva lógica de la aplicación, por ejemplo, abrir el menú principal.
+                MainFrame mainFrame = new MainFrame(gestorDB);
+                mainFrame.setVisible(true);
                 this.dispose();  // Cierra el marco de inicio de sesión.
             } else {
                 JOptionPane.showMessageDialog(this, "Credenciales inválidas", "Error", JOptionPane.ERROR_MESSAGE);

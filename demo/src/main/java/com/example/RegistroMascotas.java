@@ -56,19 +56,22 @@ public class RegistroMascotas extends JFrame {
         String dniUsuario = txtDniUsuario.getText().trim();
         String nombreMascota = txtNombreMascota.getText().trim();
         String sexoMascota = txtSexoMascota.getText().trim();
-
-        // Aquí se deberían incluir las validaciones de los campos ingresados.
-
+    
         try {
-            if (gestorDB.insertarMascota(dniUsuario, nombreMascota, sexoMascota)) {
-                JOptionPane.showMessageDialog(this, "Mascota registrada correctamente.");
+            if (gestorDB.usuarioExiste(dniUsuario, sexoMascota)) { // Asegúrate de que este método existe y está implementado correctamente.
+                if (gestorDB.insertarMascota(dniUsuario, nombreMascota, sexoMascota)) {
+                    JOptionPane.showMessageDialog(this, "Mascota registrada correctamente.");
+                } else {
+                    JOptionPane.showMessageDialog(this, "No se pudo registrar la mascota.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             } else {
-                JOptionPane.showMessageDialog(this, "No se pudo registrar la mascota.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "DNI del usuario no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Error al añadir datos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+    
 
     // Método main para probar el formulario. Se debe quitar en la aplicación final.
 }
