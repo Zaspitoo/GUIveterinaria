@@ -114,4 +114,8 @@ public boolean usuarioExiste(String nombreUsuario, String esDni) {
             return filasAfectadas > 0;
         }
     }
+
+    public Connection getConnection() {
+        return this.conexion;
+    }
 }

@@ -30,7 +30,7 @@ public class Main {
                 new LoginFrame(gestorDB).setVisible(true);
                 break;
             case 1: // Opción para registrarse como nuevo usuario.
-                new RegistroFrame(gestorDB).setVisible(true);
+                new RegistroFrame(gestorDB, null).setVisible(true);
                 break;
             case 2: // Opción para administrar la clínica (requiere login de administrador).
                 AdminLoginFrame adminLoginFrame = new AdminLoginFrame();

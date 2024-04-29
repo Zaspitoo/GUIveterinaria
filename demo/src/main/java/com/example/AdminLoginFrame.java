@@ -47,7 +47,7 @@ public class AdminLoginFrame extends JFrame {
 
         if (adminUsername.equals(enteredUsername) && adminPassword.equals(enteredPassword)) {
             // Pasar la instancia de DBmanager al AdminMainFrame
-            AdminMainFrame adminMainFrame = new AdminMainFrame(gestorDB);
+            AdminMainFrame adminMainFrame = new AdminMainFrame(gestorDB, null, null);
             adminMainFrame.setVisible(true);
             this.dispose(); // Cierra la ventana de inicio de sesión.
         } else {

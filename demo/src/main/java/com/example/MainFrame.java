@@ -13,6 +13,8 @@ public class MainFrame extends JFrame {
     private JTextArea textArea;
     private JTextField txtFechaCita, txtMotivo, txtMascotaId;
 
+
+
     public MainFrame(DBmanager dbManager) {
         this.dbManager = dbManager;
         setTitle("Sistema de Gestión - Clínica Veterinaria");
