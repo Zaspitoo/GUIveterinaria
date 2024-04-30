@@ -1,13 +1,15 @@
+
 package com.example;
 
 /**
  * Propietario class represents an owner of pets in the veterinary clinic system.
  */
 public class Propietario {
-    private int id;
+    
     private String nombre;
     private String telefono;
     private String direccion;
+    private Integer ID;
 
     /**
      * Constructor for Propietario.
@@ -15,26 +17,32 @@ public class Propietario {
      * @param nombre The name of the owner.
      * @param telefono The phone number of the owner.
      * @param direccion The address of the owner.
+     * @param iD
      */
-    public Propietario(int id, String nombre, String telefono, String direccion) {
-        this.id = id;
+    public Propietario(Integer ID, String nombre, String telefono, String direccion ) {
+        
         this.nombre = nombre;
         this.telefono = telefono;
         this.direccion = direccion;
+        this.ID = ID;
+        
+
     }
 
     // Getters and Setters
-    public int getId() {
-        return id;
+    public Integer getID() {
+        return ID;
     }
 
-    public void setId(int id) {
-        this.id = id;
+
+    public void setID(Integer ID) {
+        this.ID = ID;
     }
 
     public String getNombre() {
         return nombre;
     }
+    
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
@@ -56,10 +64,12 @@ public class Propietario {
         this.direccion = direccion;
     }
 
+    
+
     @Override
     public String toString() {
         return "Propietario{" +
-                "id=" + id +
+                "id=" + ID +
                 ", nombre='" + nombre + '\'' +
                 ", telefono='" + telefono + '\'' +
                 ", direccion='" + direccion + '\'' +

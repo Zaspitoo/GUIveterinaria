@@ -35,9 +35,13 @@ public class DBmanager {
     }
 
     // Método para añadir un nuevo usuario a la base de datos.
-    public boolean insertarUsuario(String username, String password, String dniUsuario) throws SQLException {
+    public boolean insertarUsuario(String username, String password, Integer iD) throws SQLException {
         String sql = "INSERT INTO users (username, password, DNI) VALUES (?, ?, ?)";
-        return executeInsert(sql, username, password, dniUsuario);
+        return executeInsert(sql, username, password, iD);
+    }
+
+    private boolean executeInsert(String sql, String username, String password, Integer iD) {
+        return false;
     }
 
     // Método para verificar las credenciales de un usuario.
@@ -64,12 +68,12 @@ public class DBmanager {
 
     
 // Método para verificar si un usuario existe en la base de datos por nombre de usuario y DNI.
-public boolean usuarioExiste(String nombreUsuario, String esDni) {
+public boolean usuarioExiste(String nombreUsuario, Integer ID) {
     // Actualiza la consulta SQL para incluir una verificación del DNI
     String sql = "SELECT username FROM users WHERE username = ? AND DNI = ? LIMIT 1";
     try (PreparedStatement pstmt = this.conexion.prepareStatement(sql)) {
         pstmt.setString(1, nombreUsuario); // Establece el nombre de usuario en el primer parámetro
-        pstmt.setString(2, esDni); // Establece el DNI en el segundo parámetro
+        pstmt.setInt(2, ID);// Establece el ID en el segundo parámetro
         ResultSet rs = pstmt.executeQuery(); // Ejecuta la consulta
         boolean existe = rs.next(); // Comprueba si hay algún resultado
         rs.close(); // Cierra el ResultSet
@@ -117,5 +121,22 @@ public boolean usuarioExiste(String nombreUsuario, String esDni) {
 
     public Connection getConnection() {
         return this.conexion;
+    }
+
+    public boolean usuarioExiste(String dniUsuario, String sexoMascota) {
+        // Actualiza la consulta SQL para incluir una verificación del DNI
+        String sql = "SELECT * FROM Usuario WHERE DNI = ? AND Sexo = ? LIMIT 1";
+        try (PreparedStatement pstmt = this.conexion.prepareStatement(sql)) {
+            pstmt.setString(1, dniUsuario); // Establece el DNI en el primer parámetro
+            pstmt.setString(2, sexoMascota); // Establece el sexo en el segundo parámetro
+            ResultSet rs = pstmt.executeQuery(); // Ejecuta la consulta
+            boolean existe = rs.next(); // Comprueba si hay algún resultado
+            rs.close(); // Cierra el ResultSet
+            return existe; // Devuelve true si el usuario existe, false si no
+        } catch (SQLException e) {
+            System.out.println("Error al verificar la existencia del usuario: " + e.getMessage());
+            return false; // Devuelve false si ocurre un error
+        }
+        
     }
 }

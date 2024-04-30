@@ -16,6 +16,8 @@ public class RegistroFrame extends JFrame {
     private DBmanager gestorDB;
     private PropietarioService propietarioService;
 
+    
+
     public RegistroFrame(DBmanager gestorDB, PropietarioService propietarioService) {
         this.gestorDB = gestorDB;
         this.propietarioService = propietarioService;
@@ -54,36 +56,45 @@ public class RegistroFrame extends JFrame {
         panel.add(txtDireccionPropietario);
 
         btnRegistrar = new JButton("Registrar");
-        btnRegistrar.addActionListener(this::registrarUsuario);
+        btnRegistrar.addActionListener(evento -> {
+            try {
+                registrarUsuario(evento);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                // Handle the SQLException here
+            }
+        });
         panel.add(new JLabel());  // Spacer
         panel.add(btnRegistrar);
 
         add(panel);
     }
 
-    private void registrarUsuario(ActionEvent evento) {
+    private void registrarUsuario(ActionEvent evento) throws HeadlessException, SQLException {
         String usuario = txtUsuario.getText().trim();
         String contraseña = new String(txtContraseña.getPassword()).trim();
-        String dniUsuario = txtDniUsuario.getText().trim();
+        String IDTexto = txtDniUsuario.getText().trim();
         String nombreProp = txtNombrePropietario.getText().trim();
         String telefonoProp = txtTelefonoPropietario.getText().trim();
         String direccionProp = txtDireccionPropietario.getText().trim();
-
+    
+        if (usuario.isEmpty() || contraseña.isEmpty() || IDTexto.isEmpty() ||
+            nombreProp.isEmpty() || telefonoProp.isEmpty() || direccionProp.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+    
         try {
-            if (usuario.isEmpty() || contraseña.isEmpty() || dniUsuario.isEmpty() ||
-                nombreProp.isEmpty() || telefonoProp.isEmpty() || direccionProp.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            if (gestorDB.usuarioExiste(usuario, dniUsuario)) {
+            Integer ID = Integer.parseInt(IDTexto);
+    
+            if (gestorDB.usuarioExiste(usuario, ID)) {
                 JOptionPane.showMessageDialog(this, "El nombre de usuario o DNI ya está en uso.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
-            Propietario propietario = new Propietario(0, nombreProp, telefonoProp, direccionProp);
+    
+            Propietario propietario = new Propietario(ID, nombreProp, telefonoProp, direccionProp);
             if (propietarioService.registrarPropietario(propietario)) {
-                if (gestorDB.insertarUsuario(usuario, contraseña, dniUsuario)) {
+                if (gestorDB.insertarUsuario(usuario, contraseña, ID)) {
                     JOptionPane.showMessageDialog(this, "Usuario y propietario registrados correctamente.");
                     this.dispose();
                     new LoginFrame(gestorDB).setVisible(true);
@@ -93,11 +104,10 @@ public class RegistroFrame extends JFrame {
             } else {
                 JOptionPane.showMessageDialog(this, "Error al registrar propietario.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error de base de datos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "El DNI debe ser un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
             DBmanager gestorDB = null;

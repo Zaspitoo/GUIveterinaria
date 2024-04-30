@@ -33,7 +33,7 @@ public class ConexionMySQL {
     /**
      * Registra el driver de MySQL y establece la conexión si no existe o está cerrada.
      */
-    private static void connect() {
+    static void connect() {
         try {
             if (connection == null || connection.isClosed()) {
                 Class.forName("com.mysql.cj.jdbc.Driver");
@@ -96,5 +96,10 @@ public class ConexionMySQL {
             System.err.println("Error al obtener la conexión: " + e.getMessage());
         }
         return connection;
+    }
+
+    public static Connection connect(String host2, String user2, String pass2, String dbName) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'connect'");
     }
 }

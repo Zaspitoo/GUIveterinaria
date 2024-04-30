@@ -74,7 +74,7 @@ public class MainFrame extends JFrame {
 
     private void fetchData(ActionEvent e) {
         try {
-            ResultSet rs = dbManager.executeQuery("SELECT nombre, especie FROM Mascotas");
+            ResultSet rs = dbManager.executeQuery("SELECT nombre, especie FROM mascotas");
             StringBuilder sb = new StringBuilder();
             while (rs.next()) {
                 sb.append("Nombre: ").append(rs.getString("nombre")).append(", Especie: ").append(rs.getString("especie")).append("\n");

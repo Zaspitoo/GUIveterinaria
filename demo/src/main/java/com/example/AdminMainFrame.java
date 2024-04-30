@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 public class AdminMainFrame extends JFrame {
     private DBmanager gestorDB;
@@ -33,7 +34,14 @@ public class AdminMainFrame extends JFrame {
         buttonsPanel.add(btnAgregarPropietario);
 
         JButton btnEditarPropietario = new JButton("Editar Propietario");
-        btnEditarPropietario.addActionListener(this::editarPropietario);
+        btnEditarPropietario.addActionListener(a -> {
+            try {
+                editarPropietario(a);
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        });
         buttonsPanel.add(btnEditarPropietario);
 
         JButton btnEliminarPropietario = new JButton("Eliminar Propietario");
@@ -76,8 +84,9 @@ public class AdminMainFrame extends JFrame {
         String nombre = JOptionPane.showInputDialog(this, "Nombre del propietario:");
         String telefono = JOptionPane.showInputDialog(this, "Teléfono del propietario:");
         String direccion = JOptionPane.showInputDialog(this, "Dirección del propietario:");
-        if (nombre != null && telefono != null && direccion != null) {
-            Propietario propietario = new Propietario(0, nombre, telefono, direccion);
+        Integer ID = Integer.parseInt(JOptionPane.showInputDialog(this, "ID DEL PROPIETARIO"));
+        if (nombre != null && telefono != null && direccion != null ) {
+            Propietario propietario = new Propietario(ID, nombre, telefono, direccion);
             boolean result = propietarioService.registrarPropietario(propietario);
             if (result) {
                 JOptionPane.showMessageDialog(this, "Propietario agregado exitosamente.");
@@ -86,35 +95,56 @@ public class AdminMainFrame extends JFrame {
             }
         }
     }
-
-    private void editarPropietario(ActionEvent e) {
-        // Retrieve, edit, and update an existing owner record
-        int id = Integer.parseInt(JOptionPane.showInputDialog(this, "ID del propietario a editar:"));
-        Propietario propietario = propietarioService.buscarPropietario(id);
-        if (propietario != null) {
-            String newName = JOptionPane.showInputDialog(this, "Nuevo nombre del propietario:", propietario.getNombre());
-            String newPhone = JOptionPane.showInputDialog(this, "Nuevo teléfono del propietario:", propietario.getTelefono());
-            String newAddress = JOptionPane.showInputDialog(this, "Nueva dirección del propietario:", propietario.getDireccion());
-            propietario.setNombre(newName);
-            propietario.setTelefono(newPhone);
-            propietario.setDireccion(newAddress);
-            boolean result = propietarioService.actualizarPropietario(propietario);
-            if (result) {
-                JOptionPane.showMessageDialog(this, "Propietario actualizado exitosamente.");
-            } else {
-                JOptionPane.showMessageDialog(this, "Error al actualizar propietario.");
+    
+    private void editarPropietario(ActionEvent e) throws SQLException {
+        String idTexto = JOptionPane.showInputDialog(this, "ID del propietario a editar:");
+        if (idTexto != null && !idTexto.trim().isEmpty()) {
+            try {
+                Integer ID = Integer.parseInt(idTexto.trim());
+                Optional<Propietario> propietarioOptional = propietarioService.buscarPropietario(ID);
+                if (propietarioOptional.isPresent()) {
+                    Propietario propietario = propietarioOptional.get();
+                    String newName = JOptionPane.showInputDialog(this, "Nuevo nombre del propietario:", propietario.getNombre());
+                    if (newName != null && !newName.trim().isEmpty()) {
+                        String newPhone = JOptionPane.showInputDialog(this, "Nuevo teléfono del propietario:", propietario.getTelefono());
+                        if (newPhone != null && !newPhone.trim().isEmpty()) {
+                            String newAddress = JOptionPane.showInputDialog(this, "Nueva dirección del propietario:", propietario.getDireccion());
+                            if (newAddress != null && !newAddress.trim().isEmpty()) {
+                                propietario.setNombre(newName.trim());
+                                propietario.setTelefono(newPhone.trim());
+                                propietario.setDireccion(newAddress.trim());
+                                boolean result = propietarioService.actualizarPropietario(propietario);
+                                if (result) {
+                                    JOptionPane.showMessageDialog(this, "Propietario actualizado exitosamente.");
+                                } else {
+                                    JOptionPane.showMessageDialog(this, "Error al actualizar propietario.");
+                                }
+                            } else {
+                                JOptionPane.showMessageDialog(this, "La actualización de la dirección no puede estar vacía.");
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(this, "La actualización del teléfono no puede estar vacía.");
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(this, "El nuevo nombre no puede estar vacío.");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Propietario no encontrado.");
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "El ID debe ser un número válido.");
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Propietario no encontrado.");
+            JOptionPane.showMessageDialog(this, "La entrada del ID no puede estar vacía.");
         }
     }
 
     private void eliminarPropietario(ActionEvent e) {
         // Confirm and delete a owner record
-        int id = Integer.parseInt(JOptionPane.showInputDialog(this, "ID del propietario a eliminar:"));
+        Integer ID = Integer.parseInt(JOptionPane.showInputDialog(this, "ID del propietario a eliminar:"));
         boolean confirm = JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar este propietario?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
         if (confirm) {
-            boolean result = propietarioService.borrarPropietario(id);
+            boolean result = propietarioService.borrarPropietario(ID);
             if (result) {
                 JOptionPane.showMessageDialog(this, "Propietario eliminado exitosamente.");
             } else {
@@ -195,17 +225,16 @@ public class AdminMainFrame extends JFrame {
 
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
-            DBmanager gestorDB = null;
-            PropietarioDAO propietarioDAO = new PropietarioDAO(gestorDB.getConnection());
-            CitaDAO citaDAO = new CitaDAO(gestorDB.getConnection());
-            PropietarioService propietarioService = new PropietarioService(propietarioDAO);
-            CitaService citaService = new CitaService(citaDAO);
             try {
-                gestorDB = new DBmanager();
+                DBmanager gestorDB = new DBmanager(); // Inicializa primero
+                PropietarioDAO propietarioDAO = new PropietarioDAO(gestorDB.getConnection());
+                CitaDAO citaDAO = new CitaDAO(gestorDB.getConnection());
+                PropietarioService propietarioService = new PropietarioService(propietarioDAO);
+                CitaService citaService = new CitaService(citaDAO);
+                new AdminMainFrame(gestorDB, propietarioService, citaService).setVisible(true);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            new AdminMainFrame(gestorDB, propietarioService, citaService).setVisible(true);
         });
     }
 }
