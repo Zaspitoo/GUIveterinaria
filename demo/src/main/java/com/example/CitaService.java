@@ -14,7 +14,7 @@ public class CitaService {
 
     public boolean registrarCita(Cita cita) {
         try {
-            return citaDAO.agregarCita(cita);
+            return citaDAO.agregarCitas(cita);
         } catch (SQLException e) {
             System.out.println("Error al registrar la cita: " + e.getMessage());
             return false;
@@ -30,7 +30,7 @@ public class CitaService {
         }
     }
 
-    public boolean borrarCita(int id) {
+    public boolean borrarCita(String id) {
         try {
             return citaDAO.eliminarCita(id);
         } catch (SQLException e) {
@@ -39,7 +39,7 @@ public class CitaService {
         }
     }
 
-    public Cita buscarCita(int id) {
+    public Cita buscarCita(String id) {
         try {
             return citaDAO.obtenerCita(id);
         } catch (SQLException e) {

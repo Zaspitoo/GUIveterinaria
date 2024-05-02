@@ -15,7 +15,7 @@ public class Main {
         }
 
         // Opciones para el usuario al iniciar la aplicación, eliminando la opción de Registrar Mascota.
-        Object[] opciones = {"Iniciar Sesión", "Registrarse", "Administrar Veterinaria"};
+        Object[] opciones = {"Iniciar Sesión", "Registrarse", "Administrar Veterinaria, ","Registrar Mascota"};
         int respuesta = JOptionPane.showOptionDialog(null, "¿Qué acción desea realizar?",
                 "Inicio de aplicación",
                 JOptionPane.DEFAULT_OPTION,
@@ -35,6 +35,10 @@ public class Main {
             case 2: // Opción para administrar la clínica (requiere login de administrador).
                 AdminLoginFrame adminLoginFrame = new AdminLoginFrame();
                 adminLoginFrame.setVisible(true);
+                break;
+
+            case 3: // Opción para registrar una mascota.
+                new RegistroMascotas(gestorDB).setVisible(true);
                 break;
             default:
                 System.exit(0); // Cierra la aplicación si no se elige una opción válida o se cierra el diálogo.

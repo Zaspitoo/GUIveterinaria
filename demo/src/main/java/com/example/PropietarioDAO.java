@@ -9,53 +9,59 @@ import java.util.List;
 import java.util.Optional;
 
 public class PropietarioDAO {
-    private Connection conexion;
+    private Connection connection;
 
-    public PropietarioDAO(Connection conexion) {
-        this.conexion = conexion;
+    // Constructor que permite inyección de la conexión para mejor manejo de pruebas y transacciones
+    public PropietarioDAO(Connection connection) {
+        this.connection = connection;
+    }
+
+    // Constructor que permite la creación de una conexión a la base de datos
+    public PropietarioDAO() {
+        this.connection = ConexionMySQL.getConnection();
     }
 
     public boolean agregarPropietario(Propietario propietario) throws SQLException {
-        String sql = "INSERT INTO propietarios (nombre, telefono, direccion, ID) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement pstmt = conexion.prepareStatement(sql)) {
-            pstmt.setString(1, propietario.getNombre());
-            pstmt.setString(2, propietario.getTelefono());
-            pstmt.setString(3, propietario.getDireccion());
-            pstmt.setLong(4, propietario.getID());
-
-            return pstmt.executeUpdate() > 0;
-        }
-    }
-
-    public boolean actualizarPropietario(Propietario propietario) throws SQLException {
-        String sql = "UPDATE propietarios SET nombre = ?, telefono = ?, direccion = ? WHERE ID = ?";
-        try (PreparedStatement pstmt = conexion.prepareStatement(sql)) {
-            pstmt.setString(1, propietario.getNombre());
-            pstmt.setString(2, propietario.getTelefono());
-            pstmt.setString(3, propietario.getDireccion());
-            pstmt.setInt(4, propietario.getID());
-    
+        String sql = "INSERT INTO propietarios (id, nombre, telefono, direccion) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, propietario.getID());  // Cambiado de setInt a setString
+            pstmt.setString(2, propietario.getNombre());
+            pstmt.setString(3, propietario.getTelefono());
+            pstmt.setString(4, propietario.getDireccion());
             int affectedRows = pstmt.executeUpdate();
             return affectedRows > 0;
         }
     }
 
-    public boolean eliminarPropietario(Integer ID) throws SQLException {
-        String sql = "DELETE FROM propietarios WHERE id = ?";
-        try (PreparedStatement pstmt = conexion.prepareStatement(sql)) {
-            pstmt.setInt(1, ID);
-            return pstmt.executeUpdate() > 0;
+    public boolean actualizarPropietario(Propietario propietario) throws SQLException {
+        String sql = "UPDATE propietarios SET nombre = ?, telefono = ?, direccion = ? WHERE id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, propietario.getNombre());
+            pstmt.setString(2, propietario.getTelefono());
+            pstmt.setString(3, propietario.getDireccion());
+            pstmt.setInt(4, propietario.getID());  // Cambiado de setInt a setString
+            int affectedRows = pstmt.executeUpdate();
+            return affectedRows > 0;
         }
     }
 
-    public Optional<Propietario> buscarPropietarioPorId(Integer ID) throws SQLException {
-        String sql = "SELECT * FROM propietarios WHERE ID = ?";
-        try (PreparedStatement pstmt = conexion.prepareStatement(sql)) {
+    public boolean eliminarPropietario(int ID) throws SQLException {  // Cambio del tipo de ID a String
+        String sql = "DELETE FROM propietarios WHERE id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, ID);
+            int affectedRows = pstmt.executeUpdate();
+            return affectedRows > 0;
+        }
+    }
+
+    public Optional<Propietario> buscarPropietario(int ID) throws SQLException {  // Cambio del tipo de ID a String
+        String sql = "SELECT * FROM propietarios WHERE id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, ID);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     return Optional.of(new Propietario(
-                        rs.getInt("ID"),
+                        rs.getInt("id"),
                         rs.getString("nombre"),
                         rs.getString("telefono"),
                         rs.getString("direccion")
@@ -65,27 +71,21 @@ public class PropietarioDAO {
         }
         return Optional.empty();
     }
-    
+
     public List<Propietario> listarPropietarios() throws SQLException {
         List<Propietario> propietarios = new ArrayList<>();
         String sql = "SELECT * FROM propietarios";
-        try (PreparedStatement pstmt = conexion.prepareStatement(sql);
+        try (PreparedStatement pstmt = connection.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
-                Propietario propietario = new Propietario(
-                    rs.getInt("ID"),
+                propietarios.add(new Propietario(
+                    rs.getInt("id"),
                     rs.getString("nombre"),
                     rs.getString("telefono"),
                     rs.getString("direccion")
-                );
-                propietarios.add(propietario);
+                ));
             }
         }
         return propietarios;
-    }
-
-    @SuppressWarnings("exports")
-    public Connection getConnect() {
-        return conexion;
     }
 }

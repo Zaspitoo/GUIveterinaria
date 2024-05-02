@@ -71,7 +71,18 @@ public class RegistroMascotas extends JFrame {
             JOptionPane.showMessageDialog(this, "Error al añadir datos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+    public static void main(String[] args) {
+        try {
+            DBmanager dbManager = new DBmanager();
+            RegistroMascotas frame = new RegistroMascotas(dbManager);
+            frame.setVisible(true);
+        } catch (SQLException e) {
+            System.out.println("Error al conectar con la base de datos: " + e.getMessage());
+        }
+        
+    }
+}
+
     
 
-    // Método main para probar el formulario. Se debe quitar en la aplicación final.
-}
+    

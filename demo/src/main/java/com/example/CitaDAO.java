@@ -15,10 +15,10 @@ public class CitaDAO {
         this.conexion = conexion;
     }
 
-    public boolean agregarCita(Cita cita) throws SQLException {
+    public boolean agregarCitas(Cita cita) throws SQLException {
         String sql = "INSERT INTO citas (propietario_id, fecha_hora, motivo) VALUES (?, ?, ?)";
         try (PreparedStatement pstmt = conexion.prepareStatement(sql)) {
-            pstmt.setInt(1, cita.getPropietarioId());
+            pstmt.setString(1, cita.getPropietarioId());
             pstmt.setString(2, cita.getFechaHora());
             pstmt.setString(3, cita.getMotivo());
             int affectedRows = pstmt.executeUpdate();
@@ -29,33 +29,33 @@ public class CitaDAO {
     public boolean actualizarCita(Cita cita) throws SQLException {
         String sql = "UPDATE citas SET propietario_id = ?, fecha_hora = ?, motivo = ? WHERE id = ?";
         try (PreparedStatement pstmt = conexion.prepareStatement(sql)) {
-            pstmt.setInt(1, cita.getPropietarioId());
+            pstmt.setString(1, cita.getPropietarioId());
             pstmt.setString(2, cita.getFechaHora());
             pstmt.setString(3, cita.getMotivo());
-            pstmt.setInt(4, cita.getId());
+            pstmt.setString(4, cita.getId());
             int affectedRows = pstmt.executeUpdate();
             return affectedRows > 0;
         }
     }
 
-    public boolean eliminarCita(int id) throws SQLException {
+    public boolean eliminarCita(String id) throws SQLException {
         String sql = "DELETE FROM citas WHERE id = ?";
         try (PreparedStatement pstmt = conexion.prepareStatement(sql)) {
-            pstmt.setInt(1, id);
+            pstmt.setString(1, id);
             int affectedRows = pstmt.executeUpdate();
             return affectedRows > 0;
         }
     }
 
-    public Cita obtenerCita(int id) throws SQLException {
+    public Cita obtenerCita(String id) throws SQLException {
         String sql = "SELECT * FROM citas WHERE id = ?";
         try (PreparedStatement pstmt = conexion.prepareStatement(sql)) {
-            pstmt.setInt(1, id);
+            pstmt.setString(1, id);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     return new Cita(
-                        rs.getInt("id"),
-                        rs.getInt("propietario_id"),
+                        
+                        rs.getString("propietario_id"),
                         rs.getString("fecha_hora"),
                         rs.getString("motivo")
                     );
@@ -72,8 +72,8 @@ public class CitaDAO {
              ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
                 citas.add(new Cita(
-                    rs.getInt("id"),
-                    rs.getInt("propietario_id"),
+                    
+                    rs.getString("propietario_id"),
                     rs.getString("fecha_hora"),
                     rs.getString("motivo")
                 ));

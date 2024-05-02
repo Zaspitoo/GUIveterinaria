@@ -54,7 +54,7 @@ public class AdminMainFrame extends JFrame {
 
         // Botones para Cita
         JButton btnAgregarCita = new JButton("Agregar Cita");
-        btnAgregarCita.addActionListener(this::agregarCita);
+        btnAgregarCita.addActionListener(this::agregarCitas);
         buttonsPanel.add(btnAgregarCita);
 
         JButton btnEditarCita = new JButton("Editar Cita");
@@ -84,8 +84,8 @@ public class AdminMainFrame extends JFrame {
         String nombre = JOptionPane.showInputDialog(this, "Nombre del propietario:");
         String telefono = JOptionPane.showInputDialog(this, "Teléfono del propietario:");
         String direccion = JOptionPane.showInputDialog(this, "Dirección del propietario:");
-        Integer ID = Integer.parseInt(JOptionPane.showInputDialog(this, "ID DEL PROPIETARIO"));
-        if (nombre != null && telefono != null && direccion != null ) {
+        int ID = Integer.parseInt(JOptionPane.showInputDialog(this, "ID del propietario:"));
+        if (nombre != null && telefono != null && direccion != null) {
             Propietario propietario = new Propietario(ID, nombre, telefono, direccion);
             boolean result = propietarioService.registrarPropietario(propietario);
             if (result) {
@@ -100,8 +100,8 @@ public class AdminMainFrame extends JFrame {
         String idTexto = JOptionPane.showInputDialog(this, "ID del propietario a editar:");
         if (idTexto != null && !idTexto.trim().isEmpty()) {
             try {
-                Integer ID = Integer.parseInt(idTexto.trim());
-                Optional<Propietario> propietarioOptional = propietarioService.buscarPropietario(ID);
+                int ID = Integer.parseInt(idTexto);
+                Optional<Propietario> propietarioOptional = propietarioService.obtenerPropietario(ID);
                 if (propietarioOptional.isPresent()) {
                     Propietario propietario = propietarioOptional.get();
                     String newName = JOptionPane.showInputDialog(this, "Nuevo nombre del propietario:", propietario.getNombre());
@@ -113,7 +113,7 @@ public class AdminMainFrame extends JFrame {
                                 propietario.setNombre(newName.trim());
                                 propietario.setTelefono(newPhone.trim());
                                 propietario.setDireccion(newAddress.trim());
-                                boolean result = propietarioService.actualizarPropietario(propietario);
+                                boolean result = propietarioService.modificarPropietario(propietario);
                                 if (result) {
                                     JOptionPane.showMessageDialog(this, "Propietario actualizado exitosamente.");
                                 } else {
@@ -141,10 +141,10 @@ public class AdminMainFrame extends JFrame {
 
     private void eliminarPropietario(ActionEvent e) {
         // Confirm and delete a owner record
-        Integer ID = Integer.parseInt(JOptionPane.showInputDialog(this, "ID del propietario a eliminar:"));
+        int ID = Integer.parseInt(JOptionPane.showInputDialog(this, "ID del propietario a eliminar:"));  
         boolean confirm = JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar este propietario?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
         if (confirm) {
-            boolean result = propietarioService.borrarPropietario(ID);
+            boolean result = propietarioService.eliminarPropietario(ID);
             if (result) {
                 JOptionPane.showMessageDialog(this, "Propietario eliminado exitosamente.");
             } else {
@@ -163,13 +163,13 @@ public class AdminMainFrame extends JFrame {
         txtAreaDatos.setText(sb.toString());
     }
 
-    private void agregarCita(ActionEvent e) {
+    private void agregarCitas(ActionEvent e) {
         // Interactive dialogue to input new appointment data and save it
-        int propietarioId = Integer.parseInt(JOptionPane.showInputDialog(this, "ID del propietario para la cita:"));
+        String propietarioId = JOptionPane.showInputDialog(this, "ID del propietario de la cita:");
         String fechaHora = JOptionPane.showInputDialog(this, "Fecha y hora de la cita (yyyy-MM-dd HH:mm):");
         String motivo = JOptionPane.showInputDialog(this, "Motivo de la cita:");
         if (fechaHora != null && motivo != null) {
-            Cita cita = new Cita(0, propietarioId, fechaHora, motivo);
+            Cita cita = new Cita(propietarioId, fechaHora, motivo);
             boolean result = citaService.registrarCita(cita);
             if (result) {
                 JOptionPane.showMessageDialog(this, "Cita agregada exitosamente.");
@@ -181,7 +181,7 @@ public class AdminMainFrame extends JFrame {
 
     private void editarCita(ActionEvent e) {
         // Retrieve, edit, and update an existing appointment record
-        int id = Integer.parseInt(JOptionPane.showInputDialog(this, "ID de la cita a editar:"));
+        String id = JOptionPane.showInputDialog(this, "ID de la cita a editar:");
         Cita cita = citaService.buscarCita(id);
         if (cita != null) {
             String newFechaHora = JOptionPane.showInputDialog(this, "Nueva fecha y hora de la cita (yyyy-MM-dd HH:mm):", cita.getFechaHora());
@@ -201,7 +201,7 @@ public class AdminMainFrame extends JFrame {
 
     private void eliminarCita(ActionEvent e) {
         // Confirm and delete an appointment record
-        int id = Integer.parseInt(JOptionPane.showInputDialog(this, "ID de la cita a eliminar:"));
+        String id= JOptionPane.showInputDialog(this, "ID de la cita a eliminar:");
         boolean confirm = JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar esta cita?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
         if (confirm) {
             boolean result = citaService.borrarCita(id);

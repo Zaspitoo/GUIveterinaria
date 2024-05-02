@@ -16,20 +16,21 @@ public class RegistroFrame extends JFrame {
     private DBmanager gestorDB;
     private PropietarioService propietarioService;
 
-    
-
     public RegistroFrame(DBmanager gestorDB, PropietarioService propietarioService) {
+        if (propietarioService == null) {
+            throw new IllegalArgumentException("PropietarioService cannot be null");
+        }
         this.gestorDB = gestorDB;
         this.propietarioService = propietarioService;
         setTitle("Registro de Usuario - Clínica Veterinaria");
-        setSize(350, 300); // Adjusted size to fit new fields
+        setSize(350, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         initUI();
         setLocationRelativeTo(null);
     }
 
     private void initUI() {
-        JPanel panel = new JPanel(new GridLayout(6, 2, 10, 10));  // Adjusted grid layout to 6 rows
+        JPanel panel = new JPanel(new GridLayout(6, 2, 10, 10));
 
         panel.add(new JLabel("Usuario:"));
         txtUsuario = new JTextField(15);
@@ -56,45 +57,36 @@ public class RegistroFrame extends JFrame {
         panel.add(txtDireccionPropietario);
 
         btnRegistrar = new JButton("Registrar");
-        btnRegistrar.addActionListener(evento -> {
-            try {
-                registrarUsuario(evento);
-            } catch (SQLException e) {
-                e.printStackTrace();
-                // Handle the SQLException here
-            }
-        });
+        btnRegistrar.addActionListener(this::registrarUsuario);
         panel.add(new JLabel());  // Spacer
         panel.add(btnRegistrar);
 
         add(panel);
     }
 
-    private void registrarUsuario(ActionEvent evento) throws HeadlessException, SQLException {
+    private void registrarUsuario(ActionEvent evento) {
         String usuario = txtUsuario.getText().trim();
         String contraseña = new String(txtContraseña.getPassword()).trim();
-        String IDTexto = txtDniUsuario.getText().trim();
+        String DNI = txtDniUsuario.getText().trim();
         String nombreProp = txtNombrePropietario.getText().trim();
         String telefonoProp = txtTelefonoPropietario.getText().trim();
         String direccionProp = txtDireccionPropietario.getText().trim();
     
-        if (usuario.isEmpty() || contraseña.isEmpty() || IDTexto.isEmpty() ||
+        if (usuario.isEmpty() || contraseña.isEmpty() || DNI.isEmpty() ||
             nombreProp.isEmpty() || telefonoProp.isEmpty() || direccionProp.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
     
         try {
-            Integer ID = Integer.parseInt(IDTexto);
-    
-            if (gestorDB.usuarioExiste(usuario, ID)) {
+            if (gestorDB.usuarioExiste(usuario, DNI)) {
                 JOptionPane.showMessageDialog(this, "El nombre de usuario o DNI ya está en uso.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
     
-            Propietario propietario = new Propietario(ID, nombreProp, telefonoProp, direccionProp);
+            Propietario propietario = new Propietario(DNI, nombreProp, telefonoProp, direccionProp);
             if (propietarioService.registrarPropietario(propietario)) {
-                if (gestorDB.insertarUsuario(usuario, contraseña, ID)) {
+                if (gestorDB.insertarUsuario(usuario, contraseña, DNI)) {
                     JOptionPane.showMessageDialog(this, "Usuario y propietario registrados correctamente.");
                     this.dispose();
                     new LoginFrame(gestorDB).setVisible(true);
@@ -104,21 +96,22 @@ public class RegistroFrame extends JFrame {
             } else {
                 JOptionPane.showMessageDialog(this, "Error al registrar propietario.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "El DNI debe ser un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error al acceder a la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    public static void main(String[] args) {
+
+    public static void main(String[] args) throws SQLException {
         EventQueue.invokeLater(() -> {
             DBmanager gestorDB = null;
-            PropietarioDAO propietarioDAO = new PropietarioDAO(gestorDB.getConnection());
-            PropietarioService propietarioService = new PropietarioService(propietarioDAO);
             try {
                 gestorDB = new DBmanager();
+                PropietarioDAO propietarioDAO = new PropietarioDAO(gestorDB.getConnection());
+                PropietarioService propietarioService = new PropietarioService(propietarioDAO);
+                new RegistroFrame(gestorDB, propietarioService).setVisible(true);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            new RegistroFrame(gestorDB, propietarioService).setVisible(true);
         });
     }
 }
