@@ -5,15 +5,16 @@ package com.example;
  */
 public class Propietario {
     
+    private int ID;
     private String nombre;
     private String telefono;
     private String direccion;
-    private int ID;  // Cambio del tipo de ID a String
-    private String dNI;
+    private String dniUsuario;
+    
 
     /**
      * Constructor for Propietario.
-     * @param iD The unique identifier for the owner.
+     * @param ID The unique identifier for the owner (can include characters).
      * @param nombre The name of the owner.
      * @param telefono The phone number of the owner.
      * @param direccion The address of the owner.
@@ -25,22 +26,16 @@ public class Propietario {
         this.direccion = direccion;
     }
 
-    public Propietario(String dNI, String nombreProp, String telefonoProp, String direccionProp) {
-        this.nombre = nombreProp;
-        this.telefono = telefonoProp;
-        this.direccion = direccionProp;
-        this.dNI = dNI;
+    public Propietario(String dniUsuario, String nombre, String telefono, String direccion) {
+        this.dniUsuario = dniUsuario;
+        this.nombre = nombre;
+        this.telefono = telefono;
+        this.direccion = direccion;
     }
 
     // Getters and Setters
     public int getID() {
         return ID;
-    }
-    public String getDNI() {
-        return dNI;
-    }
-    public void setDNI(String dNI) {
-        this.dNI = dNI;
     }
 
     public void setID(int ID) {
@@ -70,11 +65,17 @@ public class Propietario {
     public void setDireccion(String direccion) {
         this.direccion = direccion;
     }
+    public String getdniUsuario(){
+        return dniUsuario;
+    }
+    public void setdniUsuario(String dniUsuario){
+        this.dniUsuario = dniUsuario;
+    }
 
     @Override
     public String toString() {
         return "Propietario{" +
-               "id='" + ID + '\'' +
+               "ID='" + ID + '\'' +
                ", nombre='" + nombre + '\'' +
                ", telefono='" + telefono + '\'' +
                ", direccion='" + direccion + '\'' +

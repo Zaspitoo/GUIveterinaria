@@ -1,43 +1,76 @@
 package com.example;
 
+
+
 /**
  * Cita class represents an appointment in the veterinary clinic system.
  */
 public class Cita {
-    private String id;
-    private String propietarioId;
-    private String fechaHora;
+    private int id;
+    private int propietarioId;
+    private String fechaHora;  // Cambiado a LocalDateTime para un manejo adecuado de fechas
     private String motivo;
+    private String username;
 
     /**
      * Constructor for Cita.
-     * @param i The unique identifier for the appointment.
      * @param propietarioId The identifier for the owner associated with the appointment.
      * @param fechaHora The date and time of the appointment.
+     * @param motivo The reason for the appointment.
      */
-    public Cita( String propietarioId, String fechaHora, String motivo) {
-        
+    public Cita(int id,int propietarioId, String fechaHora, String motivo, String username) {
+        this.id = id;  
+        this.propietarioId = propietarioId;
+        this.fechaHora = fechaHora;
+        this.motivo = motivo;
+        this.username = username;
+
+    }
+
+    public Cita(int propietarioId, String fechaHora, String motivo) {
         this.propietarioId = propietarioId;
         this.fechaHora = fechaHora;
         this.motivo = motivo;
     }
 
-   
+    public Cita(int id, String motivo, String fechaHora, String username) {
+        this.id = id;
+        this.motivo = motivo;
+        this.fechaHora = fechaHora;
+        this.username = username;
 
-    // Getters and Setters
-    public String getId() {
-        return id;
     }
 
-    public void setId(String id) {
+    public Cita(String username, String motivo, String fechaHora) {
+        this.username = username;
+        this.motivo = motivo;
+        this.fechaHora = fechaHora;
+    }
+
+    public String getusername(){
+        return username;
+    }
+
+    public void setusername(String username){
+
+        this.username = username;
+    }
+
+    // Método para generar un ID único, podría integrar una lógica más compleja o base de datos
+    public void setID(int id){
         this.id = id;
     }
 
-    public String getPropietarioId() {
+    // Getters and Setters
+    public int getId() {
+        return id;
+    }
+
+    public int getPropietarioId() {
         return propietarioId;
     }
 
-    public void setPropietarioId(String propietarioId) {
+    public void setPropietarioId(int propietarioId) {
         this.propietarioId = propietarioId;
     }
 
@@ -60,9 +93,9 @@ public class Cita {
     @Override
     public String toString() {
         return "Cita{" +
-                "id=" + id +
-                ", propietarioId=" + propietarioId +
-                ", fechaHora='" + fechaHora + '\'' +
+                "id='" + id + '\'' +
+                ", propietarioId='" + propietarioId + '\'' +
+                ", fechaHora=" + fechaHora +
                 ", motivo='" + motivo + '\'' +
                 '}';
     }

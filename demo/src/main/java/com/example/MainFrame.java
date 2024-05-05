@@ -9,103 +9,119 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MainFrame extends JFrame {
-    private DBmanager dbManager;
-    private JTextArea textArea;
-    private JTextField txtFechaCita, txtMotivo, txtUsername;
+    private JTextField txtMotivo, txtFechaCita, txtUsername;
+    private JButton btnRegistrarMascota, btnVerDatos, btnAgregarCita;
+    private JTextArea textArea;  // Used for displaying fetched data
+    private ConexionMySQL gestorDB;
 
-    public MainFrame(DBmanager dbManager) {
-        this.dbManager = dbManager;
+    public MainFrame() {
         setTitle("Sistema de Gestión - Clínica Veterinaria");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         initUI();
         setLocationRelativeTo(null);
+        gestorDB = new ConexionMySQL();
     }
 
     private void initUI() {
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
         JMenu menu = new JMenu("Archivo");
-        menuBar.add(menu);
         JMenuItem menuItemSalir = new JMenuItem("Salir");
         menuItemSalir.addActionListener(e -> System.exit(0));
         menu.add(menuItemSalir);
+        menuBar.add(menu);
 
         JPanel panel = new JPanel(new GridLayout(6, 2, 10, 10));
-        add(panel);
+        getContentPane().add(panel, BorderLayout.CENTER); // Add to center
+
         panel.add(new JLabel("Motivo:"));
         txtMotivo = new JTextField(15);
         panel.add(txtMotivo);
-
+        
         panel.add(new JLabel("Fecha Cita (yyyy-mm-dd):"));
         txtFechaCita = new JTextField(15);
         panel.add(txtFechaCita);
-
+        
         panel.add(new JLabel("Username:"));
         txtUsername = new JTextField(15);
         panel.add(txtUsername);
 
-        
+        btnRegistrarMascota = new JButton("Registrar Mascota");
+        btnRegistrarMascota.addActionListener(this::showRegistrarMascota);
+        panel.add(btnRegistrarMascota);
 
-        JButton btnView = new JButton("Ver Datos");
-        JButton btnAddCita = new JButton("Agregar Cita");
-        btnView.addActionListener(this::fetchData);
-        btnAddCita.addActionListener(this::agregarCita);
+        btnVerDatos = new JButton("Ver Datos");
+        btnAgregarCita = new JButton("Agregar Cita");
+        btnVerDatos.addActionListener(this::fetchData);
+        btnAgregarCita.addActionListener(e -> {
+            agregarCita(e);
+        });
+        panel.add(btnVerDatos);
+        panel.add(btnAgregarCita);
 
-        panel.add(btnView);
-        panel.add(btnAddCita);
-
-        textArea = new JTextArea(10, 40);
-        textArea.setEditable(false);
-        panel.add(new JScrollPane(textArea));
+        textArea = new JTextArea(5, 20);
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        getContentPane().add(scrollPane, BorderLayout.SOUTH); // Add scrollPane to the bottom
     }
 
     private void fetchData(ActionEvent e) {
-        try {
-            ResultSet rs = dbManager.executeQuery("SELECT nombre, especie FROM mascotas");
-            StringBuilder sb = new StringBuilder();
-            while (rs.next()) {
-                sb.append("Nombre: ").append(rs.getString("nombre")).append(", Especie: ").append(rs.getString("especie")).append("\n");
+        StringBuilder sb = new StringBuilder("Citas Registradas:\n");
+        try (Connection conn = ConexionMySQL.connect();
+             PreparedStatement stmt1 = conn.prepareStatement("SELECT * FROM citas");
+             ResultSet rs1 = stmt1.executeQuery()) {
+            while (rs1.next()) {
+                sb.append("Fecha: ").append(rs1.getString("fecha_hora")).append(", Motivo: ").append(rs1.getString("motivo"))
+                  .append(", Username: ").append(rs1.getString("username")).append("\n");
+            }
+            sb.append("\nMascotas Registradas:\n");
+            PreparedStatement stmt2 = conn.prepareStatement("SELECT nombre FROM mascotas");
+            ResultSet rs2 = stmt2.executeQuery();
+            while (rs2.next()) {
+                sb.append("Nombre: ").append(rs2.getString("nombre")).append("\n");
             }
             textArea.setText(sb.toString());
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error al recuperar datos: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+    
+    
 
     private void agregarCita(ActionEvent e) {
+        String fechaHora = txtFechaCita.getText().trim();
+        String motivo = txtMotivo.getText().trim();
+        String username = txtUsername.getText().trim();
+    
         try {
-            String fechaHora = txtFechaCita.getText().trim();
-            String motivo = txtMotivo.getText().trim();
-            String username = txtUsername.getText().trim();
-
-            // Validate username existence
-            if (!dbManager.usuarioExiste(username)) {
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            dateFormatter.setLenient(false);
+            dateFormatter.parse(fechaHora); // Valida la fecha y hora directamente.
+    
+            if (!ConexionMySQL.usuarioExiste(username)) {
                 JOptionPane.showMessageDialog(this, "El usuario no existe.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
-            // Validate date format
-            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-            dateFormatter.setLenient(false); // Important to avoid accepting invalid dates
-            Date test = dateFormatter.parse(fechaHora); // Validate the date.
-
-            dbManager.agregarCita( fechaHora, motivo, username);
-            JOptionPane.showMessageDialog(this, "Cita agregada correctamente.");
+    
+            try (Connection conn = ConexionMySQL.connect()) {
+                ConexionMySQL.agregarCita(fechaHora, motivo, username); // Asume que este método ahora acepta Connection como parámetro
+                JOptionPane.showMessageDialog(this, "Cita agregada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error al agregar la cita: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
         } catch (ParseException ex) {
-            JOptionPane.showMessageDialog(this, "Fecha no válida. Use el formato correcto (yyyy-mm-dd).", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Fecha no válida. Use el formato correcto (yyyy-MM-dd HH:mm).", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    public static void main(String[] args) {
-        EventQueue.invokeLater(() -> {
-            DBmanager dbManager = null;
-            try {
-                dbManager = new DBmanager();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-            new MainFrame(dbManager).setVisible(true);
+    private void showRegistrarMascota(ActionEvent e) {
+        RegistroMascotas registroMascotas = new RegistroMascotas(gestorDB);
+        registroMascotas.setVisible(true);
+    }
+    public static void main(String[] args) throws SQLException {
+        SwingUtilities.invokeLater(() -> {
+            MainFrame mainFrame = new MainFrame();
+            mainFrame.setVisible(true);
         });
     }
 }
