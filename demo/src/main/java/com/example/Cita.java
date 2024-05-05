@@ -7,31 +7,13 @@ package com.example;
  */
 public class Cita {
     private int id;
-    private int propietarioId;
-    private String fechaHora;  // Cambiado a LocalDateTime para un manejo adecuado de fechas
+    private String fechaHora;  
     private String motivo;
     private String username;
 
-    /**
-     * Constructor for Cita.
-     * @param propietarioId The identifier for the owner associated with the appointment.
-     * @param fechaHora The date and time of the appointment.
-     * @param motivo The reason for the appointment.
-     */
-    public Cita(int id,int propietarioId, String fechaHora, String motivo, String username) {
-        this.id = id;  
-        this.propietarioId = propietarioId;
-        this.fechaHora = fechaHora;
-        this.motivo = motivo;
-        this.username = username;
+    
 
-    }
-
-    public Cita(int propietarioId, String fechaHora, String motivo) {
-        this.propietarioId = propietarioId;
-        this.fechaHora = fechaHora;
-        this.motivo = motivo;
-    }
+  
 
     public Cita(int id, String motivo, String fechaHora, String username) {
         this.id = id;
@@ -41,10 +23,11 @@ public class Cita {
 
     }
 
-    public Cita(String username, String motivo, String fechaHora) {
-        this.username = username;
+    public Cita(String motivo,String fechaHora,  String username) {
         this.motivo = motivo;
         this.fechaHora = fechaHora;
+        this.username = username;
+        
     }
 
     public String getusername(){
@@ -66,13 +49,7 @@ public class Cita {
         return id;
     }
 
-    public int getPropietarioId() {
-        return propietarioId;
-    }
-
-    public void setPropietarioId(int propietarioId) {
-        this.propietarioId = propietarioId;
-    }
+    
 
     public String getFechaHora() {
         return fechaHora;
@@ -94,7 +71,6 @@ public class Cita {
     public String toString() {
         return "Cita{" +
                 "id='" + id + '\'' +
-                ", propietarioId='" + propietarioId + '\'' +
                 ", fechaHora=" + fechaHora +
                 ", motivo='" + motivo + '\'' +
                 '}';

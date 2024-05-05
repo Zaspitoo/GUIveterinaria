@@ -1,11 +1,15 @@
+// Paquete que organiza las clases relacionadas con la implementación.
 package com.example;
 
+// Importación de las librerías necesarias para la interfaz gráfica, manejo de eventos y conexión con la base de datos.
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 
+// Clase RegistroFrame que hereda de JFrame para crear una ventana de aplicación.
 public class RegistroFrame extends JFrame {
+    // Componentes de la interfaz para captura de datos del usuario y propietario.
     private JTextField txtUsuario;
     private JPasswordField txtContraseña;
     private JTextField txtDniUsuario;
@@ -16,19 +20,22 @@ public class RegistroFrame extends JFrame {
     private ConexionMySQL gestorDB;
     private PropietarioService propietarioService;
 
+    // Constructor que inicializa la conexión con la base de datos y el servicio de propietarios.
     public RegistroFrame(ConexionMySQL gestorDB, PropietarioService propietarioService) {
         this.gestorDB = gestorDB;
         this.propietarioService = propietarioService;
-        setTitle("Registro de Usuario - Clínica Veterinaria");
-        setSize(350, 300);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        initUI();
-        setLocationRelativeTo(null);
+        setTitle("Registro de Usuario - Clínica Veterinaria"); // Título de la ventana
+        setSize(350, 300); // Tamaño de la ventana
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Comportamiento al cerrar
+        initUI(); // Inicialización de la interfaz de usuario
+        setLocationRelativeTo(null); // Centrar ventana
     }
 
+    // Método para inicializar los componentes de la interfaz de usuario.
     private void initUI() {
-        JPanel panel = new JPanel(new GridLayout(7, 2, 10, 10));
+        JPanel panel = new JPanel(new GridLayout(7, 2, 10, 10)); // Panel con diseño de rejilla
 
+        // Agregar y configurar cada componente del formulario de registro.
         panel.add(new JLabel("Usuario:"));
         txtUsuario = new JTextField(15);
         panel.add(txtUsuario);
@@ -57,10 +64,12 @@ public class RegistroFrame extends JFrame {
         btnRegistrar.addActionListener(this::registrarUsuario);
         panel.add(btnRegistrar);
 
-        add(panel);
+        add(panel); // Añadir el panel al JFrame
     }
 
+    // Método para manejar el evento de clic en el botón de registro.
     private void registrarUsuario(ActionEvent evento) {
+        // Extracción y limpieza de los datos ingresados por el usuario.
         String usuario = txtUsuario.getText().trim();
         String contraseña = new String(txtContraseña.getPassword()).trim();
         String dniUsuario = txtDniUsuario.getText().trim();
@@ -68,6 +77,7 @@ public class RegistroFrame extends JFrame {
         String telefonoProp = txtTelefonoPropietario.getText().trim();
         String direccionProp = txtDireccionPropietario.getText().trim();
 
+        // Validación de campos completos.
         if (usuario.isEmpty() || contraseña.isEmpty() || dniUsuario.isEmpty() ||
             nombreProp.isEmpty() || telefonoProp.isEmpty() || direccionProp.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -75,13 +85,15 @@ public class RegistroFrame extends JFrame {
         }
 
         try {
+            // Verificación de la existencia previa del usuario y el DNI.
             if (!ConexionMySQL.usuarioExistes(usuario)) {
                 Propietario propietario = new Propietario(dniUsuario, nombreProp, telefonoProp, direccionProp);
+                // Registro del propietario y del usuario.
                 if (propietarioService.registrarPropietario(propietario)) {
                     if (ConexionMySQL.insertarUsuario(usuario, contraseña, dniUsuario)) {
                         JOptionPane.showMessageDialog(this, "Usuario y propietario registrados correctamente.");
-                        this.dispose();
-                        new LoginFrame(gestorDB).setVisible(true);
+                        this.dispose(); // Cerrar la ventana actual
+                        new LoginFrame(gestorDB).setVisible(true); // Abrir ventana de inicio de sesión
                     } else {
                         JOptionPane.showMessageDialog(this, "Error al registrar usuario.", "Error", JOptionPane.ERROR_MESSAGE);
                     }
@@ -96,6 +108,7 @@ public class RegistroFrame extends JFrame {
         }
     }
 
+    // Método main para ejecutar la aplicación.
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             ConexionMySQL gestorDB = new ConexionMySQL();

@@ -5,22 +5,25 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Clase de servicio que gestiona las operaciones sobre citas mediante un objeto DAO.
+ */
 public class CitaService {
 
-    private CitaDAO citaDAO;
+    private CitaDAO citaDAO;  // Objeto DAO para manejar las operaciones de base de datos para citas.
 
     /**
-     * Constructor that initializes the DAO with the database connection.
-     * @param citaDAO DAO to handle database operations for appointments.
+     * Constructor que inicializa el DAO con la conexión a la base de datos.
+     *  citaDAO DAO para manejar las operaciones de base de datos para citas.
      */
     public CitaService(CitaDAO citaDAO) {
         this.citaDAO = citaDAO;
     }
 
     /**
-     * Registers a new appointment in the database.
-     * @param cita Appointment object to be registered.
-     * @return true if the registration is successful, false otherwise.
+     * Registra una nueva cita en la base de datos.
+     *  cita Objeto Cita que será registrado.
+     *  true si el registro es exitoso, false de lo contrario.
      */
     public boolean registrarCita(Cita cita) {
         try (Connection conn = ConexionMySQL.connect()) {
@@ -32,9 +35,9 @@ public class CitaService {
     }
 
     /**
-     * Updates an existing appointment.
-     * @param cita Appointment object with updated data.
-     * @return true if the update is successful, false otherwise.
+     * Actualiza una cita existente.
+     * cita Objeto Cita con datos actualizados.
+     *  true si la actualización es exitosa, false de lo contrario.
      */
     public boolean actualizarCita(Cita cita) {
         try (Connection conn = ConexionMySQL.connect()) {
@@ -46,9 +49,9 @@ public class CitaService {
     }
 
     /**
-     * Deletes an appointment from the database.
-     * @param id Identifier of the appointment to delete.
-     * @return true if the deletion is successful, false otherwise.
+     * Elimina una cita de la base de datos.
+     * id Identificador de la cita a eliminar.
+     *  true si la eliminación es exitosa, false de lo contrario.
      */
     public boolean borrarCita(int id) {
         try (Connection conn = ConexionMySQL.connect()) {
@@ -60,9 +63,9 @@ public class CitaService {
     }
 
     /**
-     * Searches for an appointment by its ID.
-     * @param id Identifier of the appointment.
-     * @return Appointment if found, null otherwise.
+     * Busca una cita por su ID.
+     *  Identificador de la cita.
+     *  Cita si se encuentra, null de lo contrario.
      */
     public Cita buscarCita(int id) {
         try (Connection conn = ConexionMySQL.connect()) {
@@ -74,8 +77,8 @@ public class CitaService {
     }
 
     /**
-     * Lists all registered appointments in the database.
-     * @return A list of appointments.
+     * Lista todas las citas registradas en la base de datos.
+     *  Una lista de citas.
      */
     public List<Cita> listarCitas() {
         try (Connection conn = ConexionMySQL.connect()) {

@@ -1,3 +1,4 @@
+// Paquete que organiza las clases relacionadas con la aplicación principal de la clínica veterinaria.
 package com.example;
 
 import javax.swing.*;
@@ -6,20 +7,21 @@ import java.awt.event.ActionEvent;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
+
+// Clase principal que hereda de JFrame, proporcionando la interfaz gráfica principal de la aplicación.
 public class MainFrame extends JFrame {
     private JTextField txtMotivo, txtFechaCita, txtUsername;
     private JButton btnRegistrarMascota, btnVerDatos, btnAgregarCita;
-    private JTextArea textArea;  // Used for displaying fetched data
+    private JTextArea textArea;  // Área de texto para mostrar datos recuperados
     private ConexionMySQL gestorDB;
 
     public MainFrame() {
-        setTitle("Sistema de Gestión - Clínica Veterinaria");
-        setSize(800, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        initUI();
-        setLocationRelativeTo(null);
+        setTitle("Sistema de Gestión - Clínica Veterinaria"); // Título de la ventana
+        setSize(800, 600); // Tamaño de la ventana
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Comportamiento al cerrar
+        initUI(); // Inicialización de la interfaz de usuario
+        setLocationRelativeTo(null); // Centrar ventana
         gestorDB = new ConexionMySQL();
     }
 
@@ -33,7 +35,7 @@ public class MainFrame extends JFrame {
         menuBar.add(menu);
 
         JPanel panel = new JPanel(new GridLayout(6, 2, 10, 10));
-        getContentPane().add(panel, BorderLayout.CENTER); // Add to center
+        getContentPane().add(panel, BorderLayout.CENTER); // Agregar al centro
 
         panel.add(new JLabel("Motivo:"));
         txtMotivo = new JTextField(15);
@@ -54,15 +56,13 @@ public class MainFrame extends JFrame {
         btnVerDatos = new JButton("Ver Datos");
         btnAgregarCita = new JButton("Agregar Cita");
         btnVerDatos.addActionListener(this::fetchData);
-        btnAgregarCita.addActionListener(e -> {
-            agregarCita(e);
-        });
+        btnAgregarCita.addActionListener(this::agregarCita);
         panel.add(btnVerDatos);
         panel.add(btnAgregarCita);
 
         textArea = new JTextArea(5, 20);
         JScrollPane scrollPane = new JScrollPane(textArea);
-        getContentPane().add(scrollPane, BorderLayout.SOUTH); // Add scrollPane to the bottom
+        getContentPane().add(scrollPane, BorderLayout.SOUTH); // Agregar scrollPane abajo
     }
 
     private void fetchData(ActionEvent e) {
@@ -86,8 +86,6 @@ public class MainFrame extends JFrame {
         }
     }
     
-    
-
     private void agregarCita(ActionEvent e) {
         String fechaHora = txtFechaCita.getText().trim();
         String motivo = txtMotivo.getText().trim();
@@ -96,7 +94,7 @@ public class MainFrame extends JFrame {
         try {
             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             dateFormatter.setLenient(false);
-            dateFormatter.parse(fechaHora); // Valida la fecha y hora directamente.
+            dateFormatter.parse(fechaHora); // Valida la fecha y hora.
     
             if (!ConexionMySQL.usuarioExiste(username)) {
                 JOptionPane.showMessageDialog(this, "El usuario no existe.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -104,7 +102,7 @@ public class MainFrame extends JFrame {
             }
     
             try (Connection conn = ConexionMySQL.connect()) {
-                ConexionMySQL.agregarCita(fechaHora, motivo, username); // Asume que este método ahora acepta Connection como parámetro
+                ConexionMySQL.agregarCita(fechaHora, motivo, username); // Supone que este método ahora acepta Connection como parámetro
                 JOptionPane.showMessageDialog(this, "Cita agregada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Error al agregar la cita: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

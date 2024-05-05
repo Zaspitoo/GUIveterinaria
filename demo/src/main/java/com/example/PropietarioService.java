@@ -1,3 +1,4 @@
+// Paquete que organiza las clases relacionadas con el servicio de propietarios.
 package com.example;
 
 import java.sql.Connection;
@@ -6,21 +7,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+// Clase que maneja las operaciones del negocio relacionadas con los propietarios.
 public class PropietarioService {
-    private PropietarioDAO propietarioDao;
+    private PropietarioDAO propietarioDao; // DAO asociado para las operaciones de base de datos.
 
     /**
-     * Constructor that initializes the DAO.
-     * @param propietarioDao DAO for managing database operations for proprietors.
+     * Constructor que inicializa el DAO de propietarios.
+     * @param propietarioDao DAO para gestionar operaciones de base de datos de propietarios.
      */
     public PropietarioService(PropietarioDAO propietarioDao) {
         this.propietarioDao = propietarioDao;
     }
 
     /**
-     * Registers a new proprietor in the database.
-     * @param propietario Proprietor object to be registered.
-     * @return true if the registration is successful, false otherwise.
+     * Registra un nuevo propietario en la base de datos.
+     *  Objeto Propietario a registrar.
+     * true si el registro es exitoso, false de lo contrario.
      */
     public boolean registrarPropietario(Propietario propietario) {
         try (Connection conn = ConexionMySQL.connect()) {
@@ -32,9 +34,9 @@ public class PropietarioService {
     }
 
     /**
-     * Modifies the data of an existing proprietor.
-     * @param propietario Proprietor object with updated data.
-     * @return true if the modification is successful, false otherwise.
+     * Modifica los datos de un propietario existente.
+     *  Objeto Propietario con datos actualizados.
+     *  true si la modificación es exitosa, false de lo contrario.
      */
     public boolean modificarPropietario(Propietario propietario) {
         try (Connection conn = ConexionMySQL.connect()) {
@@ -46,9 +48,9 @@ public class PropietarioService {
     }
 
     /**
-     * Deletes a proprietor from the database.
-     * @param ID Identifier of the proprietor to delete.
-     * @return true if the deletion is successful, false otherwise.
+     * Elimina un propietario de la base de datos.
+     * Identificador del propietario a eliminar.
+     *  true si la eliminación es exitosa, false de lo contrario.
      */
     public boolean eliminarPropietario(int ID) {
         try (Connection conn = ConexionMySQL.connect()) {
@@ -60,9 +62,9 @@ public class PropietarioService {
     }
 
     /**
-     * Retrieves a proprietor by their ID.
-     * @param ID Identifier of the proprietor.
-     * @return An Optional containing the proprietor if found, or an empty Optional if not found.
+     * Recupera un propietario por su ID.
+     * 
+     *  Un Optional que contiene al propietario si se encuentra, o un Optional vacío si no se encuentra.
      */
     public Optional<Propietario> obtenerPropietario(int ID) {
         try (Connection conn = ConexionMySQL.connect()) {
@@ -73,6 +75,7 @@ public class PropietarioService {
         }
     }
 
+
     public boolean actualizarPropietario(Propietario propietario) {
         try (Connection conn = ConexionMySQL.connect()) {
             return propietarioDao.actualizarPropietario(conn, propietario);
@@ -81,11 +84,10 @@ public class PropietarioService {
             return false;
         }
     }
-    
 
     /**
-     * Lists all registered proprietors in the database.
-     * @return A list of proprietors.
+     * Lista todos los propietarios registrados en la base de datos.
+     *  Una lista de propietarios.
      */
     public List<Propietario> listarPropietarios() {
         try (Connection conn = ConexionMySQL.connect()) {

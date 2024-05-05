@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.Optional;
 import java.sql.SQLException; // Agregado
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 public class AdminMainFrameBusinessLogic {
     private ConexionMySQL gestorDB;
@@ -102,26 +104,31 @@ public class AdminMainFrameBusinessLogic {
     }
 
     public void agregarCitas(ActionEvent e) {
-        String fechaHora = JOptionPane.showInputDialog("Fecha y hora de la cita:");
-        String motivo = JOptionPane.showInputDialog("Motivo de la cita:");
-        String idPropietario = JOptionPane.showInputDialog("ID del propietario:");
-        String username = JOptionPane.showInputDialog("Ingrese usuario:");
-    
-        if (fechaHora != null && motivo != null && idPropietario != null && username != null) {
-            try {
-                int id = Integer.parseInt(idPropietario);
-                Cita cita = new Cita(id, motivo, fechaHora, username);  // Ensure Cita constructor accepts username
-                boolean result = citaService.registrarCita(cita);  // Assuming this is the method from the service class
-                if (result) {
-                    JOptionPane.showMessageDialog(null, "Cita agregada exitosamente.");
-                } else {
-                    JOptionPane.showMessageDialog(null, "Error al agregar cita.");
-                }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(null, "El ID debe ser un número válido.");
+    String fechaHora = JOptionPane.showInputDialog("Ingrese la fecha y hora de la cita (formato YYYY-MM-DD HH:MM):");
+    String motivo = JOptionPane.showInputDialog("Motivo de la cita:");
+    String username = JOptionPane.showInputDialog("Ingrese usuario:");
+
+    if (fechaHora != null && motivo != null && username != null) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            sdf.setLenient(false);  // No permitir fechas no válidas
+            sdf.parse(fechaHora);  // Validar el formato de fecha y hora
+
+            Cita cita = new Cita(motivo, fechaHora, username);  // Asumir el orden correcto en el constructor
+            boolean result = citaService.registrarCita(cita);  // Método de la clase de servicio para registrar la cita
+            if (result) {
+                JOptionPane.showMessageDialog(null, "Cita agregada exitosamente.");
+            } else {
+                JOptionPane.showMessageDialog(null, "Error al agregar cita.");
             }
+        } catch (ParseException ex) {
+            JOptionPane.showMessageDialog(null, "Formato de fecha y hora incorrecto. Use el formato 'YYYY-MM-DD HH:MM'.");
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(null, "El ID debe ser un número válido.");
         }
     }
+}
+
     
 
     public void editarCita(ActionEvent e) {

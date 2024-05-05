@@ -62,32 +62,22 @@ public class ConexionMySQL {
         }
     }
 
-    // Método para agregar una cita
     public static void agregarCita(String fechaHora, String motivo, String username) {
-        String call = "{ CALL AgregarCita(?, ?, ?) }";
-        // Asegura que la conexión esté abierta antes de proceder.
-        // Si connection es null o está cerrada, intenta reconectar.
-        try {
-            if (connection == null || connection.isClosed()) {
-                connect();
-            }
-            // Verifica nuevamente en caso de que la conexión no se haya establecido correctamente.
-            if (connection != null && !connection.isClosed()) {
-                try (CallableStatement stmt = connection.prepareCall(call)) {
-                    stmt.setString(1, fechaHora);
-                    stmt.setString(2, motivo);
-                    stmt.setString(3, username);
-                    stmt.executeUpdate();
-                } catch (SQLException e) {
-                    System.err.println("Error al agregar cita: " + e.getMessage());
-                }
-            } else {
-                System.err.println("No se pudo establecer una conexión con la base de datos.");
+        String sql = "INSERT INTO citas (fecha_hora, motivo, username) VALUES (?, ?, ?)";
+        try (Connection conn = ConexionMySQL.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, fechaHora);
+            pstmt.setString(2, motivo);
+            pstmt.setString(3, username);
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                System.out.println("Cita agregada correctamente.");
             }
         } catch (SQLException e) {
-            System.err.println("Error al verificar el estado de la conexión: " + e.getMessage());
+            System.err.println("Error al agregar cita: " + e.getMessage());
         }
     }
+    
 
     
     // Método para verificar si un usuario existe por DNI

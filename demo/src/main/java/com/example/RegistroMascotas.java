@@ -1,20 +1,25 @@
+// Paquete que organiza las clases relacionadas con el registro de mascotas.
 package com.example;
 
+// Importación de librerías necesarias para el funcionamiento de la interfaz gráfica y la conexión con la base de datos.
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 
+// Clase RegistroMascotas que hereda de JFrame para crear una ventana de aplicación.
 public class RegistroMascotas extends JFrame {
+    // Definición de componentes de la interfaz gráfica para capturar información del usuario y la mascota.
     private JTextField txtDniUsuario;
     private JTextField txtNombreMascota;
     private JTextField txtSexoMascota;
     private JButton btnRegistrarMascota;
     private ConexionMySQL gestorDB;
 
+    // Constructor que recibe un gestor de la base de datos, inicializa la interfaz y establece configuraciones básicas de la ventana.
     public RegistroMascotas(ConexionMySQL gestorDB) {
         if (gestorDB == null) {
-            throw new IllegalArgumentException("Database manager cannot be null");
+            throw new IllegalArgumentException("El gestor de la base de datos no puede ser nulo");
         }
         this.gestorDB = gestorDB;
         setTitle("Registro de Mascota - Clínica Veterinaria");
@@ -24,6 +29,7 @@ public class RegistroMascotas extends JFrame {
         setLocationRelativeTo(null);
     }
 
+    // Método initUI que inicializa y organiza los componentes de la interfaz gráfica.
     private void initUI() {
         setLayout(new BorderLayout());
 
@@ -46,9 +52,10 @@ public class RegistroMascotas extends JFrame {
         add(panel, BorderLayout.CENTER);
         add(btnRegistrarMascota, BorderLayout.SOUTH);
 
-        pack(); // Adjust the frame to fit the contents
+        pack(); // Ajusta el marco para que coincida con el contenido
     }
 
+    // Método registrarMascota que maneja la acción de registrar una mascota en la base de datos.
     private void registrarMascota(ActionEvent evento) {
         String dniUsuario = txtDniUsuario.getText().trim();
         String nombreMascota = txtNombreMascota.getText().trim();
@@ -69,6 +76,7 @@ public class RegistroMascotas extends JFrame {
         }
     }
 
+    // Método main que crea una instancia de ConexionMySQL, inicializa la ventana RegistroMascotas y la hace visible.
     public static void main(String[] args) throws SQLException {
         ConexionMySQL dbManager = new ConexionMySQL();
         RegistroMascotas frame = new RegistroMascotas(dbManager);
