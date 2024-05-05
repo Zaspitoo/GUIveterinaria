@@ -31,7 +31,7 @@ public class RegistroFrame extends JFrame {
         this.gestorDB = gestorDB;
         this.propietarioService = propietarioService;
         setTitle("Registro de Usuario - Clínica Veterinaria"); // Título de la ventana
-        setSize(350, 300); // Tamaño de la ventana
+        setSize(1000, 500); // Tamaño de la ventana
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Comportamiento al cerrar
         initUI(); // Inicialización de la interfaz de usuario
         setLocationRelativeTo(null); // Centrar ventana
@@ -117,11 +117,17 @@ public class RegistroFrame extends JFrame {
     // Método main para ejecutar la aplicación.
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            ConexionMySQL gestorDB = new ConexionMySQL();
-            PropietarioDAO propietarioDao = new PropietarioDAO(ConexionMySQL.connect());
-            PropietarioService propietarioService = new PropietarioService(propietarioDao);
-            RegistroFrame registroFrame = new RegistroFrame(gestorDB, propietarioService);
-            registroFrame.setVisible(true);
+            try {
+                ConexionMySQL gestorDB = new ConexionMySQL(); // Ensure this method does not return null
+                PropietarioDAO propietarioDao = new PropietarioDAO(ConexionMySQL.connect()); // Check that connect() does not return null
+                PropietarioService propietarioService = new PropietarioService(propietarioDao);
+                RegistroFrame registroFrame = new RegistroFrame(gestorDB, propietarioService);
+                registroFrame.setVisible(true);
+            } catch (Exception e) {
+                System.out.println("Failed to initialize the application: " + e.getMessage());
+                e.printStackTrace();
+            }
         });
     }
+    
 }

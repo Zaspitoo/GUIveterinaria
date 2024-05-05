@@ -28,10 +28,10 @@ public class Propietario {
 
     /**
      * Constructor para crear un Propietario usando el DNI como identificador alternativo.
-     * @param dniUsuario El DNI del usuario.
-     * @param nombre El nombre del propietario.
-     * @param telefono El número de teléfono del propietario.
-     * @param direccion La dirección del propietario.
+     * dniUsuario El DNI del usuario.
+     *  nombre El nombre del propietario.
+     * telefono El número de teléfono del propietario.
+     *  direccion La dirección del propietario.
      */
     public Propietario(String dniUsuario, String nombre, String telefono, String direccion) {
         this.dniUsuario = dniUsuario;

@@ -18,7 +18,7 @@ public class LoginFrame extends JFrame {
 
     public LoginFrame(ConexionMySQL gestorDB) {
         setTitle("DAM Developer - Login"); // Título de la ventana.
-        setSize(1280, 720); // Tamaño de la ventana.
+        setSize(1000, 500); // Tamaño de la ventana.
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Operación de cierre de la ventana.
         initUI(); // Inicialización de la interfaz de usuario.
         setLocationRelativeTo(null); // Centrado de la ventana.
