@@ -20,8 +20,13 @@ public class AdminMainFrame extends JFrame {
     // Constructor para la clase principal de la interfaz de usuario del administrador
     public AdminMainFrame(AdminMainFrameBusinessLogic businessLogic) {
         this.businessLogic = businessLogic;
+        setTitle("Administración"); // Configura el título de la ventana.
+        setSize(800, 600); // Establece el tamaño inicial de la ventana.
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Establece la operación de cierre.
+        setLocationRelativeTo(null); // Centra la ventana en la pantalla.
+
         ui = new AdminMainFrameUI(this, businessLogic.getGestorDB(), businessLogic.getPropietarioService(), businessLogic.getCitaService());
-        initUI();
+        initUI(); // Llama a initUI para configurar los componentes de la UI.
     }
 
     // Constructor alternativo para la clase principal de la interfaz de usuario del administrador
@@ -31,7 +36,7 @@ public class AdminMainFrame extends JFrame {
 
     // Método para inicializar la interfaz de usuario
     private void initUI() {
-        ui.initUI();
+        ui.initUI(); // Delega la configuración de la interfaz de usuario a la clase AdminMainFrameUI.
     }
 
     // Métodos para delegar acciones a la lógica de negocio

@@ -1,16 +1,16 @@
 package com.example.UI;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import com.example.BASEDEDATOS.ConexionMySQL;
 import com.example.DAO.CitaDAO;
 import com.example.DAO.PropietarioDAO;
 import com.example.SERVICIOS.CitaService;
 import com.example.SERVICIOS.PropietarioService;
-
-import java.awt.event.ActionEvent;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 public class AdminLoginFrame extends JFrame {
     private JTextField txtUsername;
@@ -23,28 +23,38 @@ public class AdminLoginFrame extends JFrame {
         gestorDB = new ConexionMySQL(); // Inicializar el gestor de conexión de la base de datos
 
         setTitle("Administración de la Clínica Veterinaria");
-        setSize(300, 125);
+        setSize(1000, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         initUI();
     }
 
-    // Método para inicializar la interfaz de usuario
+    // Método para inicializar la interfaz de usuario con BackgroundPanel
     private void initUI() {
+        BackgroundPanel backgroundPanel = new BackgroundPanel("/com/example/gui2.jpg");
+        backgroundPanel.setLayout(new BorderLayout());
+
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        centerPanel.setOpaque(false); // Hacer el panel transparente
+
         txtUsername = new JTextField(15);
         txtPassword = new JPasswordField(15);
         btnLogin = new JButton("Iniciar Sesión");
 
         btnLogin.addActionListener(this::adminLogin);
 
-        JPanel panel = new JPanel();
-        panel.add(new JLabel("Usuario:"));
-        panel.add(txtUsername);
-        panel.add(new JLabel("Contraseña:"));
-        panel.add(txtPassword);
-        panel.add(btnLogin);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.insets = new Insets(5, 10, 5, 10);
 
-        add(panel);
+        centerPanel.add(new JLabel("Usuario:"), gbc);
+        centerPanel.add(txtUsername, gbc);
+        centerPanel.add(new JLabel("Contraseña:"), gbc);
+        centerPanel.add(txtPassword, gbc);
+        centerPanel.add(btnLogin, gbc);
+
+        backgroundPanel.add(centerPanel, BorderLayout.CENTER);
+        add(backgroundPanel);
     }
 
     // Método para manejar el evento de inicio de sesión del administrador
@@ -72,7 +82,7 @@ public class AdminLoginFrame extends JFrame {
         PropietarioDAO propietarioDao = new PropietarioDAO(dbConnection);
         CitaDAO citaDao = new CitaDAO(dbConnection);
 
-        PropietarioService propietarioService = new PropietarioService((PropietarioDAO) propietarioDao);
+        PropietarioService propietarioService = new PropietarioService(propietarioDao);
         CitaService citaService = new CitaService(citaDao);
 
         AdminMainFrame adminMainFrame = new AdminMainFrame(gestorDB, propietarioService, citaService);
@@ -90,5 +100,4 @@ public class AdminLoginFrame extends JFrame {
             }
         });
     }
-
 }

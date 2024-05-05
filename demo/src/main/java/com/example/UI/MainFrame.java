@@ -2,16 +2,14 @@
 package com.example.UI;
 
 import javax.swing.*;
-
-import com.example.BASEDEDATOS.ConexionMySQL;
-import com.example.SERVICIOS.RegistroMascotas;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import com.example.BASEDEDATOS.ConexionMySQL;
+import com.example.SERVICIOS.RegistroMascotas;
 
 // Clase principal que hereda de JFrame, proporcionando la interfaz gráfica principal de la aplicación.
 public class MainFrame extends JFrame {
@@ -38,31 +36,33 @@ public class MainFrame extends JFrame {
         menu.add(menuItemSalir);
         menuBar.add(menu);
 
-        JPanel panel = new JPanel(new GridLayout(6, 2, 10, 10));
-        getContentPane().add(panel, BorderLayout.CENTER); // Agregar al centro
+        // Creación y configuración del BackgroundPanel
+        BackgroundPanel backgroundPanel = new BackgroundPanel("/com/example/gui2.jpg");
+        backgroundPanel.setLayout(new GridLayout(6, 2, 10, 10));
+        setContentPane(backgroundPanel); // Establece el backgroundPanel como el content pane
 
-        panel.add(new JLabel("Motivo:"));
+        backgroundPanel.add(new JLabel("Motivo:"));
         txtMotivo = new JTextField(15);
-        panel.add(txtMotivo);
+        backgroundPanel.add(txtMotivo);
         
-        panel.add(new JLabel("Fecha Cita (yyyy-mm-dd):"));
+        backgroundPanel.add(new JLabel("Fecha Cita (yyyy-mm-dd):"));
         txtFechaCita = new JTextField(15);
-        panel.add(txtFechaCita);
+        backgroundPanel.add(txtFechaCita);
         
-        panel.add(new JLabel("Username:"));
+        backgroundPanel.add(new JLabel("Username:"));
         txtUsername = new JTextField(15);
-        panel.add(txtUsername);
+        backgroundPanel.add(txtUsername);
 
         btnRegistrarMascota = new JButton("Registrar Mascota");
         btnRegistrarMascota.addActionListener(this::showRegistrarMascota);
-        panel.add(btnRegistrarMascota);
+        backgroundPanel.add(btnRegistrarMascota);
 
         btnVerDatos = new JButton("Ver Datos");
         btnAgregarCita = new JButton("Agregar Cita");
         btnVerDatos.addActionListener(this::fetchData);
         btnAgregarCita.addActionListener(this::agregarCita);
-        panel.add(btnVerDatos);
-        panel.add(btnAgregarCita);
+        backgroundPanel.add(btnVerDatos);
+        backgroundPanel.add(btnAgregarCita);
 
         textArea = new JTextArea(5, 20);
         JScrollPane scrollPane = new JScrollPane(textArea);
@@ -120,6 +120,7 @@ public class MainFrame extends JFrame {
         RegistroMascotas registroMascotas = new RegistroMascotas(gestorDB);
         registroMascotas.setVisible(true);
     }
+
     public static void main(String[] args) throws SQLException {
         SwingUtilities.invokeLater(() -> {
             MainFrame mainFrame = new MainFrame();

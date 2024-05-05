@@ -2,19 +2,17 @@
 package com.example.UI;
 
 import javax.swing.*;
-
-import com.example.BASEDEDATOS.ConexionMySQL;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
+
+import com.example.BASEDEDATOS.ConexionMySQL;
 
 // Clase que crea una ventana para el inicio de sesión del usuario.
 public class LoginFrame extends JFrame {
     private JTextField txtUsuario; // Campo de texto para el nombre de usuario.
     private JPasswordField txtContraseña; // Campo de contraseña para la contraseña.
     private JButton btnIniciarSesion, btnSalir; // Botones para iniciar sesión y salir.
-    private JPanel leftPanel, rightPanel; // Paneles para dividir la interfaz.
 
     public LoginFrame(ConexionMySQL gestorDB) {
         setTitle("DAM Developer - Login"); // Título de la ventana.
@@ -25,35 +23,29 @@ public class LoginFrame extends JFrame {
     }
 
     private void initUI() {
-        setLayout(new GridLayout(1, 2)); // Divide el marco en dos columnas.
+        BackgroundPanel backgroundPanel = new BackgroundPanel("/com/example/gui2.jpg");
+        backgroundPanel.setLayout(new GridBagLayout()); // Uso de GridBagLayout para un mejor control de la colocación de componentes.
+        setContentPane(backgroundPanel); // Establece el backgroundPanel como el content pane
 
-        // Panel izquierdo
-        leftPanel = new JPanel();
-        leftPanel.setBackground(new Color(95, 158, 160)); // Ajuste del color de fondo.
-        add(leftPanel);
-
-        // Panel derecho para el inicio de sesión
-        rightPanel = new JPanel(new GridBagLayout()); // Uso de GridBagLayout para un mejor control de la colocación de componentes.
-        rightPanel.setBackground(Color.WHITE); // Color de fondo para el panel derecho.
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.insets = new Insets(10, 20, 10, 20); // Márgenes para los componentes.
 
         JLabel lblUsername = new JLabel("Enter username:"); // Etiqueta para el nombre de usuario.
         constraints.gridy = 0;
-        rightPanel.add(lblUsername, constraints);
+        backgroundPanel.add(lblUsername, constraints);
 
         txtUsuario = new JTextField(15); // Campo de texto para ingresar el nombre de usuario.
         constraints.gridy = 1;
-        rightPanel.add(txtUsuario, constraints);
+        backgroundPanel.add(txtUsuario, constraints);
 
         JLabel lblPassword = new JLabel("Enter password:"); // Etiqueta para la contraseña.
         constraints.gridy = 2;
-        rightPanel.add(lblPassword, constraints);
+        backgroundPanel.add(lblPassword, constraints);
 
         txtContraseña = new JPasswordField(15); // Campo de contraseña para ingresar la contraseña.
         constraints.gridy = 3;
-        rightPanel.add(txtContraseña, constraints);
+        backgroundPanel.add(txtContraseña, constraints);
 
         btnIniciarSesion = new JButton("Login"); // Botón para iniciar sesión.
         btnSalir = new JButton("Exit"); // Botón para salir de la aplicación.
@@ -61,9 +53,7 @@ public class LoginFrame extends JFrame {
         btnPanel.add(btnIniciarSesion);
         btnPanel.add(btnSalir);
         constraints.gridy = 4;
-        rightPanel.add(btnPanel, constraints);
-
-        add(rightPanel);
+        backgroundPanel.add(btnPanel, constraints);
 
         btnIniciarSesion.addActionListener(this::iniciarSesion); // Manejador de eventos para el botón de inicio de sesión.
         btnSalir.addActionListener(e -> System.exit(0)); // Manejador de eventos para el botón de salida.
@@ -74,7 +64,7 @@ public class LoginFrame extends JFrame {
         socialPanel.add(new JLabel(new ImageIcon("/com/example/email.png"))); // Icono de correo electrónico.
         socialPanel.add(new JLabel(new ImageIcon("twitter.png"))); // Icono de Twitter.
         constraints.gridy = 5;
-        rightPanel.add(socialPanel, constraints);
+        backgroundPanel.add(socialPanel, constraints);
     }
 
     private void iniciarSesion(ActionEvent evento) {

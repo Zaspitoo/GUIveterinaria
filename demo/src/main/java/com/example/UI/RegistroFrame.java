@@ -39,39 +39,42 @@ public class RegistroFrame extends JFrame {
 
     // Método para inicializar los componentes de la interfaz de usuario.
     private void initUI() {
-        JPanel panel = new JPanel(new GridLayout(7, 2, 10, 10)); // Panel con diseño de rejilla
-
-        // Agregar y configurar cada componente del formulario de registro.
-        panel.add(new JLabel("Usuario:"));
-        txtUsuario = new JTextField(15);
-        panel.add(txtUsuario);
-
-        panel.add(new JLabel("Contraseña:"));
-        txtContraseña = new JPasswordField(15);
-        panel.add(txtContraseña);
-
-        panel.add(new JLabel("DNI:"));
-        txtDniUsuario = new JTextField(15);
-        panel.add(txtDniUsuario);
-
-        panel.add(new JLabel("Nombre Propietario:"));
-        txtNombrePropietario = new JTextField(15);
-        panel.add(txtNombrePropietario);
-
-        panel.add(new JLabel("Teléfono Propietario:"));
-        txtTelefonoPropietario = new JTextField(15);
-        panel.add(txtTelefonoPropietario);
-
-        panel.add(new JLabel("Dirección Propietario:"));
-        txtDireccionPropietario = new JTextField(15);
-        panel.add(txtDireccionPropietario);
-
+        BackgroundPanel backgroundPanel = new BackgroundPanel("/com/example/gui2.jpg");
+        backgroundPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+    
+        // Configuración de los componentes como antes, pero agregándolos al backgroundPanel
+        backgroundPanel.add(new JLabel("Usuario:"));
+        txtUsuario = new JTextField(25);
+        backgroundPanel.add(txtUsuario);
+    
+        backgroundPanel.add(new JLabel("Contraseña:"));
+        txtContraseña = new JPasswordField(25);
+        backgroundPanel.add(txtContraseña);
+    
+        backgroundPanel.add(new JLabel("DNI:"));
+        txtDniUsuario = new JTextField(25);
+        backgroundPanel.add(txtDniUsuario);
+    
+        backgroundPanel.add(new JLabel("Nombre Propietario:"));
+        txtNombrePropietario = new JTextField(25);
+        backgroundPanel.add(txtNombrePropietario);
+    
+        backgroundPanel.add(new JLabel("Teléfono Propietario:"));
+        txtTelefonoPropietario = new JTextField(25);
+        backgroundPanel.add(txtTelefonoPropietario);
+    
+        backgroundPanel.add(new JLabel("Dirección Propietario:"));
+        txtDireccionPropietario = new JTextField(25);
+        backgroundPanel.add(txtDireccionPropietario);
+    
         btnRegistrar = new JButton("Registrar");
         btnRegistrar.addActionListener(this::registrarUsuario);
-        panel.add(btnRegistrar);
-
-        add(panel); // Añadir el panel al JFrame
+        backgroundPanel.add(btnRegistrar);
+    
+        // Añadir el panel con fondo a JFrame
+        setContentPane(backgroundPanel);
     }
+    
 
     // Método para manejar el evento de clic en el botón de registro.
     private void registrarUsuario(ActionEvent evento) {
